@@ -1,0 +1,467 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="joaopalma.android.poolcontrol.EnginesFragment">
+
+    <LinearLayout
+        android:id="@+id/layout_engines"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tview_engines_engine"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:elevation="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/engines_tab_engine"
+                android:background="@color/colorPrimary"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"/>
+
+            <TextView
+                android:id="@+id/tview_engines_robot"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:elevation="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/engines_tab_robot"
+                android:background="@color/colorPrimary"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp">
+
+        <com.baoyz.widget.PullRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            app:refreshType="water_drop">
+
+            <android.support.v7.widget.CardView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/card_bg"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="3dp">
+
+                    <ScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:id="@+id/card_control_layout_engine"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:layout_marginTop="10dp">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_weight="3"
+                                        android:gravity="center"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="sans-serif-thin"
+                                        android:paddingTop="15dp"
+                                        android:layout_marginLeft="20dp"
+                                        android:text="@string/engines_title_engine"
+                                        android:textColor="@color/card_title_color"
+                                        android:textSize="23sp" />
+
+                                    <Spinner
+                                        android:id="@+id/hrs_spinner"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="25dp"/>
+
+                                </LinearLayout>
+
+                                <Button
+                                    android:id="@+id/start_engineManual"
+                                    android:layout_width="140dp"
+                                    android:layout_height="40dp"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="30dp"
+                                    android:background="@drawable/button_round_corners_engine"
+                                    android:text="@string/button_start_engine"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="17sp"
+                                    android:elevation="5dp"/>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginLeft="40dp"
+                                    android:layout_marginRight="40dp"
+                                    android:layout_marginTop="25dp"
+                                    android:background="@color/line_color" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="sans-serif-thin"
+                                        android:layout_marginTop="20dp"
+                                        android:layout_marginLeft="60dp"
+                                        android:text="@string/engines_2ndtitle_engine"
+                                        android:textColor="@color/card_title_color"
+                                        android:textSize="21sp" />
+
+                                    <android.support.v7.widget.SwitchCompat
+                                        android:id="@+id/switch_engine"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="20dp"
+                                        android:paddingLeft="20dp"
+                                        android:paddingBottom="10dp"
+                                        android:paddingTop="10dp"
+                                        android:showText="false"
+                                        android:scaleX="1.2"
+                                        android:scaleY="1.2"
+                                        android:theme="@style/MySwitch"/>
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="15dp"
+                                    android:layout_marginTop="15dp"
+                                    android:layout_marginBottom="3dp">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:textColor="@color/black"
+                                        android:textSize="16sp"
+                                        android:fontFamily="sans-serif-light"
+                                        android:text="@string/automatic_hrs"/>
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:textColor="@color/black"
+                                        android:textSize="16sp"
+                                        android:fontFamily="sans-serif-light"
+                                        android:text="@string/automatic_duration"/>
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:textColor="@color/black"
+                                        android:textSize="16sp"
+                                        android:fontFamily="sans-serif-light"
+                                        android:text="@string/automatic_operation"/>
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent">
+
+                                    <ListView
+                                        android:id="@+id/engines_listview_engine"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="150dp">
+
+                                    </ListView>
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/TV_Timepicker"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_marginLeft="10dp"
+                                        android:layout_height="wrap_content"
+                                        android:text="12:30"
+                                        android:gravity="center"
+                                        android:textSize="20sp"
+                                        android:textColor="@color/timehrs"
+                                        android:shadowColor="@color/text_shadow"
+                                        android:shadowDx="0.5"
+                                        android:shadowDy="0.5"
+                                        android:shadowRadius="1"/>
+
+                                    <Spinner
+                                        android:id="@+id/automatic_duration_spinner"
+                                        android:layout_width="10dp"
+                                        android:gravity="center"
+                                        android:layout_weight="1"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="25dp"/>
+
+                                    <Button
+                                        android:id="@+id/add_engine"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="24dp"
+                                        android:background="@drawable/button_add_round_corners"
+                                        android:text="@string/button_add"
+                                        android:textColor="@android:color/white"
+                                        android:scaleY="0.7"
+                                        android:scaleX="0.82"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:shadowColor="@color/text_shadow"
+                                        android:shadowDx="2"
+                                        android:shadowDy="2"
+                                        android:shadowRadius="4"/>
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/card_history_layout_engine"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:layout_marginTop="10dp">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_weight="3"
+                                        android:gravity="center"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="sans-serif-thin"
+                                        android:paddingTop="15dp"
+                                        android:layout_marginLeft="20dp"
+                                        android:text="@string/engines_title_engine"
+                                        android:textColor="@color/card_title_color"
+                                        android:textSize="23sp" />
+
+                                    <Spinner
+                                        android:id="@+id/hrs_spinner_robot"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="25dp"/>
+
+                                </LinearLayout>
+
+                                <Button
+                                    android:id="@+id/start_robotManual"
+                                    android:layout_width="140dp"
+                                    android:layout_height="40dp"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginTop="30dp"
+                                    android:background="@drawable/button_round_corners_robot"
+                                    android:text="@string/button_start_robot"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="17sp"
+                                    android:elevation="5dp"/>
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1dp"
+                                    android:layout_marginLeft="40dp"
+                                    android:layout_marginRight="40dp"
+                                    android:layout_marginTop="25dp"
+                                    android:background="@color/line_color" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="sans-serif-thin"
+                                        android:layout_marginTop="20dp"
+                                        android:layout_marginLeft="60dp"
+                                        android:text="@string/engines_2ndtitle_engine"
+                                        android:textColor="@color/card_title_color"
+                                        android:textSize="21sp" />
+
+                                    <android.support.v7.widget.SwitchCompat
+                                        android:id="@+id/switch_robot"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="20dp"
+                                        android:paddingLeft="20dp"
+                                        android:paddingBottom="10dp"
+                                        android:paddingTop="10dp"
+                                        android:showText="false"
+                                        android:scaleX="1.2"
+                                        android:scaleY="1.2"
+                                        android:theme="@style/MySwitch"/>
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="15dp"
+                                    android:layout_marginTop="15dp"
+                                    android:layout_marginBottom="3dp">
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:textColor="@color/black"
+                                        android:textSize="16sp"
+                                        android:fontFamily="sans-serif-light"
+                                        android:text="@string/automatic_hrs"/>
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:textColor="@color/black"
+                                        android:textSize="16sp"
+                                        android:fontFamily="sans-serif-light"
+                                        android:text="@string/automatic_duration"/>
+
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center"
+                                        android:textColor="@color/black"
+                                        android:textSize="16sp"
+                                        android:fontFamily="sans-serif-light"
+                                        android:text="@string/automatic_operation"/>
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent">
+
+                                    <ListView
+                                        android:id="@+id/engines_listview_robot"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="150dp">
+
+                                    </ListView>
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5dp"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/TV_Timepicker_Robot"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_marginLeft="10dp"
+                                        android:layout_height="wrap_content"
+                                        android:text="12:30"
+                                        android:gravity="center"
+                                        android:textSize="20sp"
+                                        android:textColor="@color/timehrs"
+                                        android:shadowColor="@color/text_shadow"
+                                        android:shadowDx="0.5"
+                                        android:shadowDy="0.5"
+                                        android:shadowRadius="1"/>
+
+                                    <Spinner
+                                        android:id="@+id/automatic_duration_spinner_robot"
+                                        android:layout_width="10dp"
+                                        android:gravity="center"
+                                        android:layout_weight="1"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="25dp"/>
+
+                                    <Button
+                                        android:id="@+id/add_robot"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="24dp"
+                                        android:background="@drawable/button_add_round_corners"
+                                        android:text="@string/button_add"
+                                        android:textColor="@android:color/white"
+                                        android:scaleY="0.7"
+                                        android:scaleX="0.82"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:shadowColor="@color/text_shadow"
+                                        android:shadowDx="2"
+                                        android:shadowDy="2"
+                                        android:shadowRadius="4"/>
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </ScrollView>
+
+            </android.support.v7.widget.CardView>
+
+        </com.baoyz.widget.PullRefreshLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

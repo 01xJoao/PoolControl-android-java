@@ -1,0 +1,436 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="joaopalma.android.poolcontrol.TempFragment">
+
+    <LinearLayout
+        android:id="@+id/layout_temp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tview_temp_control"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:elevation="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/temp_tab_controller"
+                android:background="@color/colorPrimary"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"/>
+
+            <TextView
+                android:id="@+id/tview_temp_history"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:elevation="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/temp_tab_history"
+                android:background="@color/colorPrimary"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp">
+
+        <com.baoyz.widget.PullRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            app:refreshType="water_drop">
+
+            <android.support.v7.widget.CardView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/card_bg"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="3dp">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/card_history_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="15dp"
+                                android:fontFamily="sans-serif-thin"
+                                android:text="@string/temp_last_five"
+                                android:textColor="@color/card_title_color"
+                                android:textSize="26sp" />
+
+                            <com.jjoe64.graphview.GraphView
+                                android:layout_width="match_parent"
+                                android:layout_height="200dip"
+                                android:id="@+id/graph"
+                                app:seriesColor="#D62B2B"
+                                android:layout_marginTop="15dp"/>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp"
+                                android:layout_marginTop="25dp"
+                                android:background="@color/line_color" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="15dp"
+                                android:fontFamily="sans-serif-thin"
+                                android:text="@string/temp_last_eight"
+                                android:textColor="@color/card_title_color"
+                                android:textSize="23sp" />
+
+                            <TableLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingTop="1dp"
+                                android:layout_gravity="center"
+                                android:elevation="5dp"
+                                android:background="@drawable/cell_shape"
+                                android:layout_marginRight="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginTop="15dp"
+                                android:id="@+id/eight_hrs_table">
+
+                                <TableRow
+                                    android:paddingBottom="1dp"
+                                    android:layout_gravity="center"
+                                    android:paddingRight="1dp"
+                                    android:background="@drawable/cell_shape"
+                                    android:layout_width="wrap_content">
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:stretchColumns="0"
+                                        android:text="05:00"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:text="06:00"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:text="07:00"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:text="08:00"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:text="09:00"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:text="10:00"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:text="11:00"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:text="12:00"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                </TableRow>
+
+                                <TableRow
+                                    android:paddingBottom="1dp"
+                                    android:paddingRight="1dp"
+                                    android:layout_gravity="center"
+                                    android:background="@drawable/cell_shape"
+                                    android:layout_width="wrap_content">
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="3º"
+                                        android:textSize="24sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="3º"
+                                        android:textSize="24sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="4º"
+                                        android:textSize="24sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="4º"
+                                        android:textSize="24sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="5º"
+                                        android:textSize="24sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="13º"
+                                        android:textSize="24sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="19º"
+                                        android:textSize="24sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="23º"
+                                        android:textSize="24sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                </TableRow>
+
+                            </TableLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/card_control_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:fontFamily="sans-serif-thin"
+                                android:paddingTop="10dp"
+                                android:text="@string/temp_card_tempatual"
+                                android:textColor="@color/card_title_color"
+                                android:textSize="33sp" />
+
+                            <TextView
+                                android:id="@+id/temp_graus"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="15dp"
+                                android:background="@drawable/circle_shape"
+                                android:fontFamily="sans-serif-thin"
+                                android:paddingBottom="40dp"
+                                android:paddingLeft="20dp"
+                                android:paddingRight="20dp"
+                                android:paddingTop="40dp"
+                                android:shadowColor="@color/text_shadow"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="2"
+                                android:text="23ºc"
+                                android:textColor="@color/temp_graus"
+                                android:textSize="60dp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp"
+                                android:layout_marginTop="25dp"
+                                android:background="@color/line_color" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="15dp"
+                                android:fontFamily="sans-serif-thin"
+                                android:text="@string/temp_change"
+                                android:textColor="@color/card_title_color"
+                                android:textSize="28sp" />
+
+                            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+                                android:id="@+id/ChangeTemp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp"
+                                android:layout_marginTop="30dp"
+                                app:dsb_indicatorColor="#DECF57"
+                                app:dsb_max="40"
+                                app:dsb_min="23"
+                                app:dsb_progressColor="#46ADD3"
+                                app:dsb_value="23"
+                                app:dsb_trackColor="#EB964D"/>
+
+                            <Button
+                                android:id="@+id/alterarTemperatura"
+                                android:layout_width="140dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="30dp"
+                                android:background="@drawable/button_round_corners"
+                                android:text="@string/button_change"
+                                android:textColor="@android:color/white"
+                                android:textSize="17sp"
+                                android:elevation="5dp"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </ScrollView>
+
+            </android.support.v7.widget.CardView>
+
+        </com.baoyz.widget.PullRefreshLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

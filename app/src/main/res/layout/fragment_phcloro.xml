@@ -1,0 +1,772 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="joaopalma.android.poolcontrol.phcloroFragment">
+
+    <LinearLayout
+        android:id="@+id/layout_phcloro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tview_phcloro_control"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:elevation="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/phcloro_tab_controls"
+                android:background="@color/colorPrimary"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"/>
+
+            <TextView
+                android:id="@+id/tview_phcloro_history"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="40dp"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:elevation="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/phcloro_tab_history"
+                android:background="@color/colorPrimary"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical">
+
+        <com.baoyz.widget.PullRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            app:refreshType="water_drop">
+
+            <android.support.v7.widget.CardView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/card_bg"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="3dp">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/control_phcloro"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:fontFamily="sans-serif-thin"
+                                android:paddingTop="10dp"
+                                android:text="@string/pH"
+                                android:textColor="@color/card_title_color"
+                                android:textSize="33sp" />
+
+                            <com.sccomponents.widgets.ScArcGauge
+                                android:id="@+id/gauge"
+                                xmlns:sc="http://schemas.android.com/apk/res-auto"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="-20dp"
+                                android:paddingTop="10dp"
+                                android:paddingLeft="30dp"
+                                android:paddingRight="30dp"
+                                android:scaleX="0.5"
+                                android:scaleY="0.5"
+                                sc:scc_angle_start="-180"
+                                sc:scc_angle_sweep="180"
+                                sc:scc_stroke_colors="#FF9D00|#FFCE00|#FFEB00|#00C4FF|#00B1FF|#00A7FF|#009DFF|#0089FF|#0076FF"
+                                sc:scc_stroke_colors_mode="solid"
+                                sc:scc_stroke_size="20dp"/>
+
+                            <ImageView
+                                android:id="@+id/indicator"
+                                android:layout_width="64dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginLeft="18dp"
+                                android:layout_marginTop="-65dp"
+                                android:scaleX="0.7"
+                                android:elevation="20dp"
+                                android:scaleY="0.7"
+                                android:shadowColor="@color/text_shadow"
+                                android:shadowDx="2"
+                                android:shadowDy="2"
+                                android:shadowRadius="4"
+                                android:src="@drawable/indicator"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:fontFamily="sans-serif-thin"
+                                android:paddingTop="10dp"
+                                android:text="6.7"
+                                android:textColor="@color/card_title_color"
+                                android:textSize="24sp" />
+
+                            <Button
+                                android:id="@+id/normalizar_ph"
+                                android:layout_width="125dp"
+                                android:layout_height="35dp"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="20dp"
+                                android:background="@drawable/button_round_corners_normalize"
+                                android:text="@string/button_normalize"
+                                android:textColor="@android:color/white"
+                                android:textSize="14sp"
+                                android:elevation="5dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="left"
+                                android:paddingLeft="75dp"
+                                android:fontFamily="sans-serif-light"
+                                android:paddingTop="25dp"
+                                android:text="@string/recipiente"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="left"
+                                android:paddingLeft="75dp"
+                                android:fontFamily="sans-serif-light"
+                                android:paddingTop="5dp"
+                                android:text="Atenção, nível de pH+ baixo!"
+                                android:textColor="@color/recipiente_baixo"
+                                android:textSize="19sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="2dp"
+                                android:layout_marginLeft="75dp"
+                                android:layout_marginRight="75dp"
+                                android:layout_marginTop="3dp"
+                                android:background="@color/recipiente_baixo" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp"
+                                android:layout_marginTop="35dp"
+                                android:background="@color/line_color" />
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:fontFamily="sans-serif-thin"
+                                android:paddingTop="25dp"
+                                android:text="@string/cloro"
+                                android:textColor="@color/card_title_color"
+                                android:textSize="33sp" />
+
+                            <com.sccomponents.widgets.ScArcGauge
+                                android:id="@+id/gauge_cloro"
+                                xmlns:sc="http://schemas.android.com/apk/res-auto"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="-20dp"
+                                android:paddingTop="10dp"
+                                android:paddingLeft="30dp"
+                                android:paddingRight="30dp"
+                                android:scaleX="0.5"
+                                android:scaleY="0.5"
+                                sc:scc_angle_start="-180"
+                                sc:scc_angle_sweep="180"
+                                sc:scc_stroke_colors="#FF9D00|#FFCE00|#FFEB00|#00C4FF|#00B1FF|#00A7FF|#009DFF|#0089FF|#0076FF"
+                                sc:scc_stroke_colors_mode="solid"
+                                sc:scc_stroke_size="20dp"/>
+
+                            <ImageView
+                                android:id="@+id/indicator_cloro"
+                                android:layout_width="64dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginLeft="18dp"
+                                android:layout_marginTop="-65dp"
+                                android:scaleX="0.7"
+                                android:elevation="20dp"
+                                android:scaleY="0.7"
+                                android:shadowColor="@color/text_shadow"
+                                android:shadowDx="2"
+                                android:shadowDy="2"
+                                android:shadowRadius="4"
+                                android:src="@drawable/indicator"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:fontFamily="sans-serif-thin"
+                                android:paddingTop="10dp"
+                                android:text="2.2"
+                                android:textColor="@color/card_title_color"
+                                android:textSize="24sp" />
+
+                            <Button
+                                android:id="@+id/normalizar_cloro"
+                                android:layout_width="125dp"
+                                android:layout_height="35dp"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="20dp"
+                                android:background="@drawable/button_round_corners_normalize"
+                                android:text="@string/button_normalize"
+                                android:textColor="@android:color/white"
+                                android:textSize="14sp"
+                                android:elevation="5dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="left"
+                                android:paddingLeft="75dp"
+                                android:fontFamily="sans-serif-light"
+                                android:paddingTop="25dp"
+                                android:text="@string/recipiente"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="left"
+                                android:paddingLeft="75dp"
+                                android:fontFamily="sans-serif-light"
+                                android:paddingTop="5dp"
+                                android:text="Nível de cloro normal."
+                                android:textColor="@color/recipiente_normal"
+                                android:textSize="19sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="2dp"
+                                android:layout_marginLeft="75dp"
+                                android:layout_marginRight="75dp"
+                                android:layout_marginTop="3dp"
+                                android:background="@color/recipiente_normal" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/history_phcloro"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="15dp"
+                                android:fontFamily="sans-serif-thin"
+                                android:text="@string/ph_cloro_lastfive"
+                                android:textColor="@color/card_title_color"
+                                android:textSize="26sp" />
+
+                            <com.jjoe64.graphview.GraphView
+                                android:layout_width="match_parent"
+                                android:layout_height="200dip"
+                                android:id="@+id/graph_phcloro"
+                                android:layout_marginTop="15dp"/>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp"
+                                android:layout_marginTop="25dp"
+                                android:background="@color/line_color" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="15dp"
+                                android:fontFamily="sans-serif-thin"
+                                android:text="@string/phcloro_last_nine"
+                                android:textColor="@color/card_title_color"
+                                android:textSize="23sp" />
+
+                            <TableLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingTop="1dp"
+                                android:elevation="5dp"
+                                android:background="@drawable/cell_shape"
+                                android:layout_gravity="center"
+                                android:layout_marginRight="10dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginTop="15dp"
+                                android:id="@+id/eight_hrs_table">
+
+                                <TableRow
+                                    android:paddingBottom="1dp"
+                                    android:paddingRight="1dp"
+                                    android:background="@drawable/cell_shape"
+                                    android:layout_gravity="center"
+                                    android:layout_width="wrap_content">
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:stretchColumns="0"
+                                        android:gravity="center"
+                                        android:text="Dias"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:stretchColumns="0"
+                                        android:text="14"
+                                        android:gravity="center"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:stretchColumns="0"
+                                        android:gravity="center"
+                                        android:text="15"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:gravity="center"
+                                        android:text="16"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:gravity="center"
+                                        android:text="17"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:gravity="center"
+                                        android:text="18"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:gravity="center"
+                                        android:text="19"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:gravity="center"
+                                        android:text="20"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:gravity="center"
+                                        android:text="21"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_width="wrap_content"
+                                        android:padding="5dp"
+                                        android:background="#FFF"
+                                        android:gravity="center"
+                                        android:text="22"
+                                        android:textColor="@color/eight_hrs_time_text"/>
+
+                                </TableRow>
+
+                                <TableRow
+                                    android:paddingBottom="1dp"
+                                    android:paddingRight="1dp"
+                                    android:layout_gravity="center"
+                                    android:background="@drawable/cell_shape"
+                                    android:layout_width="wrap_content">
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:textColor="@color/eight_hrs_time_text"
+                                        android:text="pH"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="6.1"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="6.6"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="6.5"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="7.0"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="6.8"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="6.9"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="7.3"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="7.0"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="6.7"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                </TableRow>
+
+                                <TableRow
+                                    android:paddingBottom="1dp"
+                                    android:paddingRight="1dp"
+                                    android:layout_gravity="center"
+                                    android:background="@drawable/cell_shape"
+                                    android:layout_width="wrap_content">
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:textColor="@color/eight_hrs_time_text"
+                                        android:text="Cloro"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="1.5"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="2.5"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="2.5"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="3.2"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="3.0"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="3.7"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="3.3"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="2.7"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                    <TextView
+                                        android:layout_marginLeft="1dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_width="wrap_content"
+                                        android:paddingLeft="5dp"
+                                        android:paddingRight="5dp"
+                                        android:paddingTop="8dp"
+                                        android:paddingBottom="8dp"
+                                        android:padding="5dp"
+                                        android:gravity="center"
+                                        android:background="#FFF"
+                                        android:text="2.2"
+                                        android:textSize="17sp"
+                                        android:fontFamily="sans-serif-light"/>
+
+                                </TableRow>
+
+                            </TableLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </ScrollView>
+
+            </android.support.v7.widget.CardView>
+
+        </com.baoyz.widget.PullRefreshLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

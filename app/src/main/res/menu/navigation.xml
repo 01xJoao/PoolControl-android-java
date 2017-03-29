@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/title_home" />
+
+    <item
+        android:id="@+id/navigation_temp"
+        android:icon="@drawable/ic_temp_black_24dp"
+        android:title="@string/title_temp" />
+
+    <item
+        android:id="@+id/navigation_engine"
+        android:icon="@drawable/ic_engine_black_24dp"
+        android:title="@string/title_engine" />
+
+    <item
+        android:id="@+id/navigation_lights"
+        android:icon="@drawable/ic_lightbulb_outline_black_24dp"
+        android:title="@string/title_lights" />
+
+    <item
+        android:id="@+id/navigation_phchlorine"
+        android:icon="@drawable/ic_phchlorine_black_24dp"
+        android:title="@string/title_phchlorine" />
+
+</menu>

@@ -1,0 +1,439 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="joaopalma.android.poolcontrol.HomeFragment">
+
+    <com.baoyz.widget.PullRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        app:refreshType="water_drop">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/layout_home"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:id="@+id/view_temp"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:src="@drawable/card7"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        app:riv_corner_radius="5dp"
+                        app:riv_mutate_background="true"
+                        app:riv_tile_mode="repeat"
+                        app:riv_oval="false"/>
+
+                    <TextView
+                        android:id="@+id/textView_textTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_temp"
+                        android:layout_alignTop="@+id/view_temp"
+                        android:layout_alignRight="@+id/view_temp"
+                        android:layout_alignBottom="@+id/view_temp"
+                        android:layout_margin="1dp"
+                        android:text="@string/view_temp"
+                        android:textColor="@color/light_font"
+                        android:textSize="30sp"
+                        android:fontFamily="sans-serif-thin"
+                        android:gravity="center|start"
+                        android:paddingLeft="25dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"/>
+
+                    <TextView
+                        android:id="@+id/textView_valueTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_temp"
+                        android:layout_alignTop="@+id/view_temp"
+                        android:layout_alignRight="@+id/view_temp"
+                        android:layout_alignBottom="@+id/view_temp"
+                        android:text="23º"
+                        android:textColor="@color/btn_temp"
+                        android:textSize="70sp"
+                        android:fontFamily="sans-serif-thin"
+                        android:gravity="center|end"
+                        android:paddingRight="25dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="2"/>
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:id="@+id/view_engine"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:src="@drawable/card3"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        app:riv_corner_radius="5dp"
+                        app:riv_mutate_background="true"
+                        app:riv_tile_mode="repeat"
+                        app:riv_oval="false"/>
+
+                    <TextView
+                        android:id="@+id/textView_textEngine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_engine"
+                        android:layout_alignTop="@+id/view_engine"
+                        android:layout_alignRight="@+id/view_engine"
+                        android:layout_alignBottom="@+id/view_engine"
+                        android:layout_margin="1dp"
+                        android:text="@string/view_engine"
+                        android:textColor="@color/light_font"
+                        android:textSize="30sp"
+                        android:fontFamily="sans-serif-thin"
+                        android:gravity="center|start"
+                        android:paddingLeft="25dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"/>
+
+                    <TextView
+                        android:id="@+id/textView_valueEngine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_engine"
+                        android:layout_alignTop="@+id/view_engine"
+                        android:layout_alignRight="@+id/view_engine"
+                        android:layout_alignBottom="@+id/view_engine"
+                        android:text="17:00"
+                        android:textColor="@color/white"
+                        android:textSize="70sp"
+                        android:fontFamily="sans-serif-thin"
+                        android:gravity="center|end"
+                        android:paddingRight="70dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="2"/>
+
+                    <TextView
+                        android:id="@+id/textView_NextCleanEngine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_engine"
+                        android:layout_alignTop="@+id/view_engine"
+                        android:layout_alignRight="@+id/view_engine"
+                        android:layout_alignBottom="@+id/view_engine"
+                        android:text="@string/next_clean"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="center|end"
+                        android:paddingRight="16dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"/>
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:id="@+id/view_robot"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:src="@drawable/card4"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        app:riv_corner_radius="5dp"
+                        app:riv_mutate_background="true"
+                        app:riv_tile_mode="repeat"
+                        app:riv_oval="false"/>
+
+                    <TextView
+                        android:id="@+id/textView_textRobot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_robot"
+                        android:layout_alignTop="@+id/view_robot"
+                        android:layout_alignRight="@+id/view_robot"
+                        android:layout_alignBottom="@+id/view_robot"
+                        android:layout_margin="1dp"
+                        android:text="@string/view_robot"
+                        android:textColor="@color/light_font"
+                        android:textSize="30sp"
+                        android:fontFamily="sans-serif-thin"
+                        android:gravity="center|start"
+                        android:paddingLeft="25dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"/>
+
+                    <TextView
+                        android:id="@+id/textView_valueRobot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_robot"
+                        android:layout_alignTop="@+id/view_robot"
+                        android:layout_alignRight="@+id/view_robot"
+                        android:layout_alignBottom="@+id/view_robot"
+                        android:text="14:30"
+                        android:textColor="@color/white"
+                        android:textSize="70sp"
+                        android:fontFamily="sans-serif-thin"
+                        android:gravity="center|end"
+                        android:paddingRight="70dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="2"/>
+
+                    <TextView
+                        android:id="@+id/textView_NextCleanRobot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_robot"
+                        android:layout_alignTop="@+id/view_robot"
+                        android:layout_alignRight="@+id/view_robot"
+                        android:layout_alignBottom="@+id/view_robot"
+                        android:text="@string/next_clean"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif-light"
+                        android:gravity="center|end"
+                        android:paddingRight="16dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"/>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:id="@+id/view_light"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:src="@drawable/card5"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        app:riv_corner_radius="5dp"
+                        app:riv_mutate_background="true"
+                        app:riv_tile_mode="repeat"
+                        app:riv_oval="false"/>
+
+                    <TextView
+                        android:id="@+id/textView_textLight"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_light"
+                        android:layout_alignTop="@+id/view_light"
+                        android:layout_alignRight="@+id/view_light"
+                        android:layout_alignBottom="@+id/view_light"
+                        android:layout_margin="1dp"
+                        android:text="@string/view_light"
+                        android:textColor="@color/light_font"
+                        android:textSize="30sp"
+                        android:fontFamily="sans-serif-thin"
+                        android:gravity="center|start"
+                        android:paddingLeft="25dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"/>
+
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/switch_light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_light"
+                        android:layout_alignTop="@+id/view_light"
+                        android:layout_alignRight="@+id/view_light"
+                        android:layout_alignBottom="@+id/view_light"
+                        android:gravity="center|end"
+                        android:paddingRight="80dp"
+                        android:scaleX="1.4"
+                        android:scaleY="1.4"
+                        android:theme="@style/MySwitchLight"/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:id="@+id/view_phcloro"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:src="@drawable/card9"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        app:riv_corner_radius="5dp"
+                        app:riv_mutate_background="true"
+                        app:riv_tile_mode="repeat"
+                        app:riv_oval="false"/>
+
+                    <TextView
+                        android:id="@+id/textView_valuePh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_phcloro"
+                        android:layout_alignTop="@+id/view_phcloro"
+                        android:layout_alignRight="@+id/view_phcloro"
+                        android:layout_alignBottom="@+id/view_phcloro"
+                        android:text="7.4"
+                        android:textColor="@color/ph"
+                        android:textSize="60sp"
+                        android:fontFamily="sans-serif-thin"
+                        android:gravity="center|start"
+                        android:paddingLeft="30dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="2"/>
+
+                    <TextView
+                        android:id="@+id/textView_textPh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_phcloro"
+                        android:layout_alignTop="@+id/view_phcloro"
+                        android:layout_alignRight="@+id/view_phcloro"
+                        android:layout_alignBottom="@+id/view_phcloro"
+                        android:layout_margin="1dp"
+                        android:text="@string/view_ph"
+                        android:textColor="@color/light_font"
+                        android:textSize="30sp"
+                        android:fontFamily="sans-serif-thin"
+                        android:gravity="center|start"
+                        android:paddingLeft="100dp"
+                        android:paddingTop="20dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"/>
+
+                    <TextView
+                        android:id="@+id/textView_valueCçprp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_phcloro"
+                        android:layout_alignTop="@+id/view_phcloro"
+                        android:layout_alignRight="@+id/view_phcloro"
+                        android:layout_alignBottom="@+id/view_phcloro"
+                        android:text="2.3"
+                        android:textColor="@color/cloro"
+                        android:textSize="60sp"
+                        android:fontFamily="sans-serif-thin"
+                        android:gravity="center|end"
+                        android:paddingRight="85dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="2"/>
+
+                    <TextView
+                        android:id="@+id/textView_textCloro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_phcloro"
+                        android:layout_alignTop="@+id/view_phcloro"
+                        android:layout_alignRight="@+id/view_phcloro"
+                        android:layout_alignBottom="@+id/view_phcloro"
+                        android:layout_margin="1dp"
+                        android:text="@string/view_cloro"
+                        android:textColor="@color/light_font"
+                        android:textSize="25sp"
+                        android:fontFamily="sans-serif-thin"
+                        android:gravity="center|end"
+                        android:paddingRight="30dp"
+                        android:paddingTop="20dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:id="@+id/view_cobertura"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:src="@drawable/card8"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        app:riv_corner_radius="5dp"
+                        app:riv_mutate_background="true"
+                        app:riv_tile_mode="repeat"
+                        app:riv_oval="false"/>
+
+                    <TextView
+                        android:id="@+id/textView_textCobertura"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_cobertura"
+                        android:layout_alignTop="@+id/view_cobertura"
+                        android:layout_alignRight="@+id/view_cobertura"
+                        android:layout_alignBottom="@+id/view_cobertura"
+                        android:layout_margin="1dp"
+                        android:text="@string/view_cobertura"
+                        android:textColor="@color/light_font"
+                        android:textSize="30sp"
+                        android:fontFamily="sans-serif-thin"
+                        android:gravity="center|start"
+                        android:paddingLeft="25dp"
+                        android:shadowColor="@color/text_shadow"
+                        android:shadowDx="2"
+                        android:shadowDy="2"
+                        android:shadowRadius="4"/>
+
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/switch_cobertura"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/view_cobertura"
+                        android:layout_alignTop="@+id/view_cobertura"
+                        android:layout_alignRight="@+id/view_cobertura"
+                        android:layout_alignBottom="@+id/view_cobertura"
+                        android:gravity="center|end"
+                        android:paddingRight="80dp"
+                        android:scaleX="1.4"
+                        android:scaleY="1.4"
+                        android:theme="@style/MySwitchCobertura"/>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </com.baoyz.widget.PullRefreshLayout>
+
+</FrameLayout>

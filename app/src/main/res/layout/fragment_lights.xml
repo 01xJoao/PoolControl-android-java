@@ -1,0 +1,116 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="joaopalma.android.poolcontrol.LightsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/LightCentral"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text="@string/light_central"
+            android:background="@drawable/button_round_corners_light_off"
+            android:layout_margin="3dp"
+            android:textColor="#ffffff"
+            android:textSize="30sp"
+            android:fontFamily="sans-serif-thin"
+            android:shadowColor="@color/text_shadow"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="4"
+            android:elevation="10dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/LightSmall1"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:text="@string/light_front_left"
+                android:background="@drawable/button_round_corners_light_off"
+                android:layout_margin="3dp"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-thin"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"
+                android:elevation="10dp"
+                android:layout_weight="0.25"/>
+
+            <Button
+                android:id="@+id/LightSmall2"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:text="@string/light_front_right"
+                android:background="@drawable/button_round_corners_light_off"
+                android:layout_margin="3dp"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-thin"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"
+                android:elevation="10dp"
+                android:layout_weight="0.25"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/LightSmall3"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:text="@string/light_back_left"
+                android:layout_margin="3dp"
+                android:background="@drawable/button_round_corners_light_off"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-thin"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"
+                android:elevation="10dp"
+                android:layout_weight="0.25"/>
+
+            <Button
+                android:id="@+id/LightSmall4"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:text="@string/light_back_right"
+                android:layout_margin="3dp"
+                android:background="@drawable/button_round_corners_light_off"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-thin"
+                android:shadowColor="@color/text_shadow"
+                android:shadowDx="2"
+                android:shadowDy="2"
+                android:shadowRadius="4"
+                android:elevation="10dp"
+                android:layout_weight="0.25"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

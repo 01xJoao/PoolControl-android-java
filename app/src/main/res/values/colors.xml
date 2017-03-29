@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#E3F2FD</color>
+
+    <color name="light_font">#FBFBFB</color>
+    <color name="grey_font">#ff9e9e9e</color>
+    <color name="text_shadow">#7F000000</color>
+    <color name="text_shadow_white">#FFFFFF</color>
+    <color name="temp_graus">#F8BF3E</color>
+    <color name="card_bg">#E6FFFFFF</color>
+    <color name="line_color">#95989A</color>
+    <color name="button_changecolor">#428BD3</color>
+    <color name="card_title_color">#585151</color>
+    <color name="eight_hrs_time_text">#000000</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="light_off">#00B1FF</color>
+    <color name="light_on">#F7E557</color>
+    <color name="timehrs">#36D59E</color>
+    <color name="colorbottonnormalize">#00B1FF</color>
+
+    <color name="recipiente_normal">#36D59E</color>
+    <color name="recipiente_baixo">#F05C5C</color>
+
+    <color name="ph">#D37645</color>
+    <color name="cloro">#E6D341</color>
+
+    <color name="btn_temp">#DDD364</color>
+
+</resources>

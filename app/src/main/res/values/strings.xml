@@ -1,0 +1,64 @@
+<resources>
+    <string name="app_name">PoolControl</string>
+    <string name="title_home">Piscina</string>
+    <string name="title_temp">Temperatura</string>
+    <string name="title_engine">Engenhos</string>
+    <string name="title_lights">Luzes</string>
+    <string name="title_phchlorine">pH &amp; Cloro</string>
+    <string name="action_settings">Definições</string>
+    <string name="settings_refresh">Actualizar</string>
+    <string name="settings_notifications">Notificações</string>
+    <string name="view_temp">Temperatura</string>
+    <string name="view_engine">Motor</string>
+    <string name="view_robot">Robo</string>
+    <string name="view_ph">pH</string>
+    <string name="view_cloro">Cloro</string>
+    <string name="view_cobertura">Cobertura</string>
+    <string name="view_movimentAlert">Alerta de Movimento</string>
+    <string name="view_light">Luz Central</string>
+    <string name="temp_tab_controller">CONTROLOS</string>
+    <string name="temp_tab_history">HISTÓRICO</string>
+    <string name="temp_card_tempatual">Temperatura atual</string>
+    <string name="temp_change">Alterar Temperatura</string>
+    <string name="button_change">Alterar</string>
+    <string name="temp_last_five">Últimas 5 horas</string>
+    <string name="temp_last_eight">Últimas 8 horas</string>
+    <string name="engines_tab_engine">MOTOR</string>
+    <string name="engines_tab_robot">ROBÔ</string>
+    <string name="phcloro_tab_controls">CONTROLOS</string>
+    <string name="phcloro_tab_history">HISTÓRICO</string>
+    <string name="engines_title_engine">Começar Limpeza de:</string>
+    <string name="engines_2ndtitle_engine">Limpeza Automatica</string>
+    <string name="button_start_engine">Começar</string>
+    <string-array name="work_hrs">
+        <item>1 Hora</item>
+        <item>2 Horas</item>
+        <item>3 Horas</item>
+        <item>4 Horas</item>
+    </string-array>
+    <string name="automatic_hrs">Hora</string>
+    <string name="automatic_duration">Duração</string>
+    <string name="automatic_operation">Operação</string>
+    <string name="button_remove">Remover</string>
+    <string name="button_add">Adicionar</string>
+    <string name="button_start_robot">Começar</string>
+
+    <string name="light_central">Luz Central</string>
+    <string name="light_front_right">Luz frente dir.</string>
+    <string name="light_front_left">Luz frente esq.</string>
+    <string name="light_back_right">Luz trás dir.</string>
+    <string name="light_back_left">Luz trás esq.</string>
+
+    <string name="pH">pH</string>
+    <string name="cloro">Cloro</string>
+    <string name="button_normalize">Normalizar</string>
+    <string name="recipiente">Recipiente:</string>
+    <string name="ph_cloro_lastfive">Últimos 5 dias</string>
+    <string name="phcloro_last_nine">Últimos 9 dias</string>
+
+    <string name="next_clean">Próxima\nlimpeza</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
