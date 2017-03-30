@@ -54,7 +54,6 @@ public class LightsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         if (isAdded()) {
-
             getActivity().setTitle("Luzes");
 
             final Button btCentral = (Button) getActivity().findViewById(R.id.LightCentral);

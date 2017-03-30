@@ -51,8 +51,6 @@ import java.util.Map;
 
 public class EnginesFragment extends DialogFragment {
 
-    //private BlankFragment.OnFragmentInteractionListener mListener;
-
     ArrayList<String> enginesHrs;
     ArrayList<String> enginesDuration;
     ArrayList<String> robotHrs;

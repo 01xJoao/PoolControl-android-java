@@ -116,8 +116,6 @@ public class HomeFragment extends Fragment {
                 layout.setRefreshDrawable(new SmartisanDrawable(getActivity(), layout));
 
                 switchCobertura = (SwitchCompat) getActivity().findViewById(R.id.switch_cobertura);
-                switchLight = (SwitchCompat) getActivity().findViewById(R.id.switch_light);
-
                 switchCobertura.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -126,7 +124,7 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-
+                switchLight = (SwitchCompat) getActivity().findViewById(R.id.switch_light);
                 switchLight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
