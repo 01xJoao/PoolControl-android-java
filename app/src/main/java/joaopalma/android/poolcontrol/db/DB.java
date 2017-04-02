@@ -20,7 +20,19 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL(Contrato.Historico.SQL_CREATE_ENTRIES);
         db.execSQL(Contrato.Sensor.SQL_CREATE_ENTRIES);
 
-        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (1, '', '' ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (1, '1', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '7', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '8', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '9', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '10', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '11', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '12', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '13', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '14', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '15', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '16', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '17', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '18', '0'); ");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){

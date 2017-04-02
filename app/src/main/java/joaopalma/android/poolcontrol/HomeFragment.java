@@ -1,7 +1,9 @@
 package joaopalma.android.poolcontrol;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
@@ -36,6 +38,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import joaopalma.android.poolcontrol.db.Contrato;
+import joaopalma.android.poolcontrol.db.DB;
+
 public class HomeFragment extends Fragment {
     // private OnFragmentInteractionListener mListener;
     PullRefreshLayout layout;
@@ -54,6 +59,11 @@ public class HomeFragment extends Fragment {
 
     ArrayList ArrayEquipamento;
     ArrayList<Integer> ArrayValor;
+
+    DB mDbHelper;
+    SQLiteDatabase db;
+
+    boolean process_switch;
 
     boolean actualizado = false;
 
@@ -96,6 +106,11 @@ public class HomeFragment extends Fragment {
 
         getActivity().setTitle("PoolControl");
 
+        process_switch = true;
+
+        mDbHelper = new DB(getActivity());
+        db = mDbHelper.getReadableDatabase();
+
         /* SHARED PREF*/
         if (isAdded()) {
 
@@ -119,8 +134,10 @@ public class HomeFragment extends Fragment {
                 switchCobertura.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (process_switch) {
                         int myInt = (isChecked) ? 1 : 0;
                         EnviarPedido(cobertura, myInt);
+                    }
                     }
                 });
 
@@ -128,8 +145,10 @@ public class HomeFragment extends Fragment {
                 switchLight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (process_switch) {
                         int myInt = (isChecked) ? 1 : 0;
                         EnviarPedido(luzCentral, myInt);
+                    }
                     }
                 });
         }
@@ -166,6 +185,7 @@ public class HomeFragment extends Fragment {
         MostrarDados();
     }
     public void MostrarDados(){
+        process_switch = false;
         if(valorLuzCentral == 1)
             switchLight.setChecked(true);
         else
@@ -176,6 +196,7 @@ public class HomeFragment extends Fragment {
         else {
             switchCobertura.setChecked(false);
         }
+        process_switch = true;
     }
 
     public void EnviarPedido(final int equipamento, final int valor){
@@ -188,19 +209,36 @@ public class HomeFragment extends Fragment {
                 try {
                     JSONObject jsonoutput = new JSONObject(response);
                 } catch (JSONException ex) {
+                    ContentValues cv = new ContentValues();
+                    cv.put(Contrato.Historico.COLUMN_VALOR, valor);
+                    db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getActivity(),"Erro: " + String.valueOf(error), Toast.LENGTH_LONG).show();
+                process_switch = false;
+
+                if(equipamento == cobertura){
+                    if(valor == 0)
+                        switchCobertura.setChecked(true);
+                    else
+                        switchCobertura.setChecked(false);
+                }
+                if(equipamento == luzCentral){
+                    if(valor == 0)
+                        switchLight.setChecked(true);
+                    else
+                        switchLight.setChecked(false);
+                }
+                process_switch = true;
             }
         }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("id_equipamento", String.valueOf(equipamento));
-                //params.put("time", String.valueOf(date));
                 params.put("valor", String.valueOf(valor));
                 return params;
             }

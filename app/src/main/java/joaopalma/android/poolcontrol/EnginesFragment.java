@@ -3,7 +3,9 @@ package joaopalma.android.poolcontrol;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
@@ -49,26 +51,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import joaopalma.android.poolcontrol.db.Contrato;
+import joaopalma.android.poolcontrol.db.DB;
+
+import static joaopalma.android.poolcontrol.TempFragment.Valor_TemperaturaDesejada;
+
 public class EnginesFragment extends DialogFragment {
 
     ArrayList<String> enginesHrs;
     ArrayList<String> enginesDuration;
     ArrayList<String> robotHrs;
     ArrayList<String> robotDuration;
-
     PullRefreshLayout layout;
+
+    boolean process_switch;
 
     int motor = 15;
     int robo = 16;
-
     int motor_automatico = 17;
     int robo_automatico = 18;
 
     int duracaomotor = 0;
     int duracaorobo = 0;
-
     int duracaomotor_automatico = 0;
     int duracaorobo_automatico = 0;
+
+    SwitchCompat switchEngine;
+    SwitchCompat switchRobot;
+
+    DB mDbHelper;
+    SQLiteDatabase db;
 
     /* Horas Picker*/
 
@@ -169,6 +181,9 @@ public class EnginesFragment extends DialogFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mDbHelper = new DB(getActivity());
+        db = mDbHelper.getReadableDatabase();
+        process_switch = true;
 
         if(isAdded()) {
 
@@ -263,7 +278,7 @@ public class EnginesFragment extends DialogFragment {
             btnMotorManual.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getActivity(), "Limpeza de motor iniciada", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "A iniciar motor", Toast.LENGTH_SHORT).show();
                     duracaomotor = EngineManualSpinneer.getSelectedItemPosition();
                     EnviarPedido(motor, duracaomotor + 1);
                 }
@@ -273,7 +288,7 @@ public class EnginesFragment extends DialogFragment {
             btnRoboManual.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getActivity(), "Limpeza de robô iniciada", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "A iniciar robô", Toast.LENGTH_SHORT).show();
                     duracaorobo = RobotManualSpinneer.getSelectedItemPosition();
                     EnviarPedido(robo, duracaorobo + 1);
                 }
@@ -282,21 +297,25 @@ public class EnginesFragment extends DialogFragment {
 
             /* SWITCH ENGINE & ROBOT */
 
-            final SwitchCompat switchEngine = (SwitchCompat) getActivity().findViewById(R.id.switch_engine);
+            switchEngine = (SwitchCompat) getActivity().findViewById(R.id.switch_engine);
             switchEngine.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    int myInt = (isChecked) ? 1 : 0;
-                    EnviarPedido(motor_automatico, myInt);
+                    if (process_switch) {
+                        int myInt = (isChecked) ? 1 : 0;
+                        EnviarPedido(motor_automatico, myInt);
+                    }
                 }
             });
 
-            final SwitchCompat switchRobot = (SwitchCompat) getActivity().findViewById(R.id.switch_robot);
+            switchRobot = (SwitchCompat) getActivity().findViewById(R.id.switch_robot);
             switchRobot.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     int myInt = (isChecked) ? 1 : 0;
-                    EnviarPedido(robo_automatico, myInt);
+                    if (process_switch) {
+                        EnviarPedido(robo_automatico, myInt);
+                    }
                 }
             });
 
@@ -356,19 +375,37 @@ public class EnginesFragment extends DialogFragment {
                 try {
                     JSONObject jsonoutput = new JSONObject(response);
                 } catch (JSONException ex) {
+                    ContentValues cv = new ContentValues();
+                    cv.put(Contrato.Historico.COLUMN_VALOR, valor);
+                    db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
+                    if(equipamento == motor || equipamento == robo)
+                        Toast.makeText(getActivity(), "Limpeza iniciada" + Valor_TemperaturaDesejada + "º", Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(),"Erro: " + String.valueOf(error), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"Erro:  " + String.valueOf(error), Toast.LENGTH_LONG).show();
+                process_switch = false;
+                if(equipamento == motor_automatico){
+                    if(valor == 0)
+                        switchEngine.setChecked(true);
+                    else
+                        switchEngine.setChecked(false);
+                }
+                if(equipamento == robo_automatico){
+                    if(valor == 0)
+                        switchRobot.setChecked(true);
+                    else
+                        switchRobot.setChecked(false);
+                }
+                process_switch = true;
             }
         }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("id_equipamento", String.valueOf(equipamento));
-                //params.put("time", String.valueOf(date));
                 params.put("valor", String.valueOf(valor));
                 return params;
             }
@@ -393,7 +430,12 @@ public class EnginesFragment extends DialogFragment {
                 try {
                     JSONObject jsonoutput = new JSONObject(response);
                 } catch (JSONException ex) {
-                    ReceberAgenda();
+                    //ReceberAgenda();
+                    ContentValues cv = new ContentValues();
+                    cv.put(Contrato.Agendamento.COLUMN_IDEQUIPAMENTO, equipamento);
+                    cv.put(Contrato.Agendamento.COLUMN_INICIO, time);
+                    cv.put(Contrato.Agendamento.COLUMN_TEMPO, duracao);
+                    db.insert(Contrato.Agendamento.TABLE_NAME, null, cv);
                 }
             }
         }, new Response.ErrorListener() {
@@ -500,8 +542,6 @@ public class EnginesFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.fragment_engines, container, false);
         return rootView;
     }
-
-
 
     @Override
     public void onAttach(Context context) {

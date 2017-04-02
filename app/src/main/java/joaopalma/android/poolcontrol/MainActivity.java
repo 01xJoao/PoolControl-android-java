@@ -2,6 +2,8 @@ package joaopalma.android.poolcontrol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,19 +12,33 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import joaopalma.android.poolcontrol.db.Contrato;
+import joaopalma.android.poolcontrol.db.DB;
+
 
 public class MainActivity extends AppCompatActivity {
+
+    DB mDbHelper;
+    SQLiteDatabase db;
+    Cursor c, c_poolcontrol;
+    SimpleCursorAdapter adapter;
 
     HomeFragment hf = HomeFragment.newInstance();
     TempFragment tf = TempFragment.newInstance();
@@ -86,13 +102,14 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         getSupportActionBar().setElevation(0);
 
-        PedidoGET();
+        mDbHelper = new DB(this);
+        db = mDbHelper.getReadableDatabase();
     }
 
 
     public void PedidoGET(){
 
-        String url_get = "https://poolcontrol.000webhostapp.com/webservices/ws_get_historico.php";
+       /* String url_get = "https://poolcontrol.000webhostapp.com/webservices/ws_get_historico.php";
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url_get, null, new Response.Listener<JSONObject>() {
             @Override
@@ -122,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsObjRequest);
+        MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsObjRequest);*/
+
     }
 }

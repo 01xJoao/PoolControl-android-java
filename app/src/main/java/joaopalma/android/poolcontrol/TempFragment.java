@@ -1,7 +1,10 @@
 package joaopalma.android.poolcontrol;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
@@ -13,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,15 +42,22 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import joaopalma.android.poolcontrol.db.Contrato;
+import joaopalma.android.poolcontrol.db.DB;
+
 public class TempFragment extends Fragment {
     // private OnFragmentInteractionListener mListener;
-    int Valor_TemperaturaDesejada;
-    int equipamento = 7;
+    static int Valor_TemperaturaDesejada;
+    static int equipamento = 7;
 
     PullRefreshLayout layout;
 
-    DateFormat df = new SimpleDateFormat("dd MM yyyy, HH:mm");
-    String date = df.format(Calendar.getInstance().getTime());
+    /* Base de dados*/
+
+    DB mDbHelper;
+    SQLiteDatabase db;
+    Cursor c, c_poolcontrol;
+    SimpleCursorAdapter adapter;
 
     public TempFragment() {
     }
@@ -65,10 +76,12 @@ public class TempFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mDbHelper = new DB(getActivity());
+        db = mDbHelper.getReadableDatabase();
+
         if (isAdded()) {
 
             getActivity().setTitle("Temperatura");
-
 
             layout = (PullRefreshLayout) getActivity().findViewById(R.id.swipeRefreshLayout);
             layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
@@ -134,12 +147,11 @@ public class TempFragment extends Fragment {
                 }
             });
 
-        /* RECEBER TEMPERATURA */
+            /* RECEBER TEMPERATURA */
 
-        /* ALTERAR TEMPERATURA */
+            /* ALTERAR TEMPERATURA */
 
             final Button buttonAlterarTemp = (Button) getActivity().findViewById(R.id.alterarTemperatura);
-
 
             buttonAlterarTemp.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -155,6 +167,9 @@ public class TempFragment extends Fragment {
                                 JSONObject jsonoutput = new JSONObject(response);
                                 //Toast.makeText(getActivity(), jsonoutput.getString(Utils.param_status), Toast.LENGTH_SHORT).show();
                             } catch (JSONException ex) {
+                                ContentValues cv = new ContentValues();
+                                cv.put(Contrato.Historico.COLUMN_VALOR, Valor_TemperaturaDesejada);
+                                db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
                                 Toast.makeText(getActivity(), "Temperatura desejada " + Valor_TemperaturaDesejada + "º", Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -168,7 +183,6 @@ public class TempFragment extends Fragment {
                         protected Map<String, String> getParams() {
                             Map<String, String> params = new HashMap<String, String>();
                             params.put("id_equipamento", String.valueOf(equipamento));
-                            //params.put("time", String.valueOf(date));
                             params.put("valor", String.valueOf(Valor_TemperaturaDesejada));
                             return params;
                         }

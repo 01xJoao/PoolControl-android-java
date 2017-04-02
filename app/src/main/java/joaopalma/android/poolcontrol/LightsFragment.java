@@ -1,6 +1,8 @@
 package joaopalma.android.poolcontrol;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,6 +24,9 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import joaopalma.android.poolcontrol.db.Contrato;
+import joaopalma.android.poolcontrol.db.DB;
+
 public class LightsFragment extends Fragment {
     // private OnFragmentInteractionListener mListener;
     boolean lightCentralBool = true;
@@ -35,6 +40,9 @@ public class LightsFragment extends Fragment {
     int LuzFrenteDir = 10;
     int LuzTrasEsq = 11;
     int LuzTrasDir = 12;
+
+    DB mDbHelper;
+    SQLiteDatabase db;
 
     public LightsFragment() {
     }
@@ -52,6 +60,9 @@ public class LightsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        mDbHelper = new DB(getActivity());
+        db = mDbHelper.getReadableDatabase();
 
         if (isAdded()) {
             getActivity().setTitle("Luzes");
@@ -148,10 +159,9 @@ public class LightsFragment extends Fragment {
                     JSONObject jsonoutput = new JSONObject(response);
                     //Toast.makeText(getActivity(), jsonoutput.getString(Utils.param_status), Toast.LENGTH_SHORT).show();
                 } catch (JSONException ex) {
-                   /* if (light)
-                        Toast.makeText(getActivity(),"Luz Ligada", Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(getActivity(),"Luz Desligada", Toast.LENGTH_SHORT).show();*/
+                    ContentValues cv = new ContentValues();
+                    cv.put(Contrato.Historico.COLUMN_VALOR, mylight);
+                    db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
                 }
             }
         }, new Response.ErrorListener() {
@@ -164,7 +174,6 @@ public class LightsFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("id_equipamento", String.valueOf(equipamento));
-                //params.put("time", String.valueOf(date));
                 params.put("valor", String.valueOf(mylight));
                 return params;
             }

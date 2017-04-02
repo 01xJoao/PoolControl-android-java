@@ -1,6 +1,8 @@
 package joaopalma.android.poolcontrol;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -36,6 +38,9 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import joaopalma.android.poolcontrol.db.Contrato;
+import joaopalma.android.poolcontrol.db.DB;
+
 public class phcloroFragment extends Fragment {
     // private OnFragmentInteractionListener mListener;
     PullRefreshLayout layout;
@@ -45,6 +50,9 @@ public class phcloroFragment extends Fragment {
 
     String get_ph;
     String get_cloro;
+
+    DB mDbHelper;
+    SQLiteDatabase db;
 
     public phcloroFragment() {
     }
@@ -62,6 +70,9 @@ public class phcloroFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        mDbHelper = new DB(getActivity());
+        db = mDbHelper.getReadableDatabase();
 
         if (isAdded()) {
 
@@ -230,6 +241,12 @@ public class phcloroFragment extends Fragment {
                 try {
                     JSONObject jsonoutput = new JSONObject(response);
                 } catch (JSONException ex) {
+                    ContentValues cv = new ContentValues();
+                    if(sensor == "ph")
+                        cv.put(Contrato.Historico.COLUMN_VALOR, get_ph);
+                    else
+                        cv.put(Contrato.Historico.COLUMN_VALOR, get_cloro);
+                    db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
                     Toast.makeText(getActivity(),"A Normalizar", Toast.LENGTH_SHORT).show();
                 }
             }
