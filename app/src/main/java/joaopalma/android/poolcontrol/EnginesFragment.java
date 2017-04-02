@@ -54,8 +54,6 @@ import java.util.Map;
 import joaopalma.android.poolcontrol.db.Contrato;
 import joaopalma.android.poolcontrol.db.DB;
 
-import static joaopalma.android.poolcontrol.TempFragment.Valor_TemperaturaDesejada;
-
 public class EnginesFragment extends DialogFragment {
 
     ArrayList<String> enginesHrs;
@@ -379,7 +377,7 @@ public class EnginesFragment extends DialogFragment {
                     cv.put(Contrato.Historico.COLUMN_VALOR, valor);
                     db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
                     if(equipamento == motor || equipamento == robo)
-                        Toast.makeText(getActivity(), "Limpeza iniciada" + Valor_TemperaturaDesejada + "º", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Limpeza iniciada", Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {

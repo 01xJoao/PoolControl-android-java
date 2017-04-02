@@ -35,11 +35,6 @@ import joaopalma.android.poolcontrol.db.DB;
 
 public class MainActivity extends AppCompatActivity {
 
-    DB mDbHelper;
-    SQLiteDatabase db;
-    Cursor c, c_poolcontrol;
-    SimpleCursorAdapter adapter;
-
     HomeFragment hf = HomeFragment.newInstance();
     TempFragment tf = TempFragment.newInstance();
     EnginesFragment ef = EnginesFragment.newInstance();
@@ -102,14 +97,12 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         getSupportActionBar().setElevation(0);
 
-        mDbHelper = new DB(this);
-        db = mDbHelper.getReadableDatabase();
+        // PedidoGET();
     }
 
+    /*public void PedidoGET(){
 
-    public void PedidoGET(){
-
-       /* String url_get = "https://poolcontrol.000webhostapp.com/webservices/ws_get_historico.php";
+       String url_get = "https://poolcontrol.000webhostapp.com/webservices/ws_get_historico.php";
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url_get, null, new Response.Listener<JSONObject>() {
             @Override
@@ -139,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsObjRequest);*/
+        MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsObjRequest);
 
-    }
+    }*/
 }

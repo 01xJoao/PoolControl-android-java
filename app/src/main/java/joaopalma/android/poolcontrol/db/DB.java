@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DB extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSON = 1;
+    public static final int DATABASE_VERSON = 2;
     public static final String DATABASE_NAME = "poolcontrol.db";
 
     public DB(Context context) {super(context, DATABASE_NAME, null, DATABASE_VERSON);}
@@ -22,17 +22,17 @@ public class DB extends SQLiteOpenHelper {
 
         db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (1, '1', '0'); ");
         db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '7', '0'); ");
-        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '8', '0'); ");
-        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '9', '0'); ");
-        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '10', '0'); ");
-        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '11', '0'); ");
-        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '12', '0'); ");
-        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '13', '0'); ");
-        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '14', '0'); ");
-        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '15', '0'); ");
-        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '16', '0'); ");
-        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '17', '0'); ");
-        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (2, '18', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (3, '8', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (4, '9', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (5, '10', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (6, '11', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (7, '12', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (8, '13', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (9, '14', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (10, '15', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (11, '16', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (12, '17', '0'); ");
+        db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (13, '18', '0'); ");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){

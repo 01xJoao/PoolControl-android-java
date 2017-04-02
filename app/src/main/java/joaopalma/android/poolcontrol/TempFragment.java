@@ -47,8 +47,9 @@ import joaopalma.android.poolcontrol.db.DB;
 
 public class TempFragment extends Fragment {
     // private OnFragmentInteractionListener mListener;
-    static int Valor_TemperaturaDesejada;
-    static int equipamento = 7;
+    int temperatura = 20;
+    int Valor_TemperaturaDesejada;
+    int equipamento = 7;
 
     PullRefreshLayout layout;
 
@@ -56,8 +57,10 @@ public class TempFragment extends Fragment {
 
     DB mDbHelper;
     SQLiteDatabase db;
-    Cursor c, c_poolcontrol;
-    SimpleCursorAdapter adapter;
+    Cursor c_historico;
+
+    DiscreteSeekBar BarChangeTemp;
+    Button buttonAlterarTemp;
 
     public TempFragment() {
     }
@@ -138,28 +141,28 @@ public class TempFragment extends Fragment {
             });
             graph.addSeries(series);
 
-            DiscreteSeekBar BarChangeTemp = (DiscreteSeekBar) getActivity().findViewById(R.id.ChangeTemp);
+            /* ALTERAR TEMPERATURA */
+
+            buttonAlterarTemp = (Button) getActivity().findViewById(R.id.alterarTemperatura);
+
+            /* Barra da temperatura */
+
+            BarChangeTemp = (DiscreteSeekBar) getActivity().findViewById(R.id.ChangeTemp);
             BarChangeTemp.setNumericTransformer(new DiscreteSeekBar.NumericTransformer() {
                 @Override
                 public int transform(int value) {
+                    buttonAlterarTemp.setText("ALTERAR");
+                    buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
                     Valor_TemperaturaDesejada = value;
                     return value;
                 }
             });
 
-            /* RECEBER TEMPERATURA */
-
-            /* ALTERAR TEMPERATURA */
-
-            final Button buttonAlterarTemp = (Button) getActivity().findViewById(R.id.alterarTemperatura);
-
             buttonAlterarTemp.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getActivity(), "A alterar temperatura...", Toast.LENGTH_SHORT).show();
-
                     String url = "https://poolcontrol.000webhostapp.com/webservices/ws_insert_historico.php";
-
+                    Toast.makeText(getActivity(), "A alterar temperatura...", Toast.LENGTH_SHORT).show();
                     StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -170,7 +173,16 @@ public class TempFragment extends Fragment {
                                 ContentValues cv = new ContentValues();
                                 cv.put(Contrato.Historico.COLUMN_VALOR, Valor_TemperaturaDesejada);
                                 db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
-                                Toast.makeText(getActivity(), "Temperatura desejada " + Valor_TemperaturaDesejada + "º", Toast.LENGTH_SHORT).show();
+                                if(Valor_TemperaturaDesejada > temperatura) {
+                                    Toast.makeText(getActivity(), "Temperatura desejada " + Valor_TemperaturaDesejada + "º", Toast.LENGTH_SHORT).show();
+                                    buttonAlterarTemp.setText("ALTERANDO");
+                                    buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners_parar);
+                                }
+                                else {
+                                    Toast.makeText(getActivity(), "Temperatura atual.", Toast.LENGTH_SHORT).show();
+                                    buttonAlterarTemp.setText("ALTERAR");
+                                    buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
+                                }
                             }
                         }
                     }, new Response.ErrorListener() {
@@ -197,8 +209,33 @@ public class TempFragment extends Fragment {
                     MySingleton.getInstance(getActivity()).addToRequestQueue(stringRequest);
                 }
             });
+
+            /* RECEBER TEMPERATURA */
+
+            preencherDados();
         }
 
+    }
+
+    public void preencherDados(){
+        c_historico = db.query(false, Contrato.Historico.TABLE_NAME, Contrato.Historico.PROJECTION,
+                "id_equipamento = ?", new String[]{String.valueOf(equipamento)}, null, null, null, null);
+        c_historico.moveToFirst();
+        Valor_TemperaturaDesejada = c_historico.getInt(2);
+        mostrarDados();
+    }
+
+    public void mostrarDados(){
+        BarChangeTemp.setProgress(Valor_TemperaturaDesejada);
+
+        if(Valor_TemperaturaDesejada > temperatura) {
+            buttonAlterarTemp.setText("ALTERANDO");
+            buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners_parar);
+        }
+        else {
+            buttonAlterarTemp.setText("ALTERAR");
+            buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
+        }
     }
 
     @Override

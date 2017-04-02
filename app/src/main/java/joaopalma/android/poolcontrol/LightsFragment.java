@@ -2,6 +2,7 @@ package joaopalma.android.poolcontrol;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -41,8 +42,18 @@ public class LightsFragment extends Fragment {
     int LuzTrasEsq = 11;
     int LuzTrasDir = 12;
 
+    Button btCentral;
+    Button btSmall1;
+    Button btSmall2;
+    Button btSmall3;
+    Button btSmall4;
+
     DB mDbHelper;
     SQLiteDatabase db;
+    Cursor c_historico;
+
+    int array_equipamento[];
+    int array_valor[];
 
     public LightsFragment() {
     }
@@ -67,11 +78,11 @@ public class LightsFragment extends Fragment {
         if (isAdded()) {
             getActivity().setTitle("Luzes");
 
-            final Button btCentral = (Button) getActivity().findViewById(R.id.LightCentral);
-            final Button btSmall1 = (Button) getActivity().findViewById(R.id.LightSmall1);
-            final Button btSmall2 = (Button) getActivity().findViewById(R.id.LightSmall2);
-            final Button btSmall3 = (Button) getActivity().findViewById(R.id.LightSmall3);
-            final Button btSmall4 = (Button) getActivity().findViewById(R.id.LightSmall4);
+            btCentral = (Button) getActivity().findViewById(R.id.LightCentral);
+            btSmall1 = (Button) getActivity().findViewById(R.id.LightSmall1);
+            btSmall2 = (Button) getActivity().findViewById(R.id.LightSmall2);
+            btSmall3 = (Button) getActivity().findViewById(R.id.LightSmall3);
+            btSmall4 = (Button) getActivity().findViewById(R.id.LightSmall4);
 
             btCentral.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -79,11 +90,10 @@ public class LightsFragment extends Fragment {
                     EnviarPedidos(LuzCentral, lightCentralBool);
                     if (lightCentralBool) {
                         btCentral.setBackgroundResource(R.drawable.button_round_corners_light_on);
-                        lightCentralBool = !lightCentralBool;
                     } else {
                         btCentral.setBackgroundResource(R.drawable.button_round_corners_light_off);
-                        lightCentralBool = !lightCentralBool;
                     }
+                    lightCentralBool = !lightCentralBool;
                 }
             });
 
@@ -93,11 +103,10 @@ public class LightsFragment extends Fragment {
                     EnviarPedidos(LuzFrenteEsq, lightSmall1Bool);
                     if (lightSmall1Bool) {
                         btSmall1.setBackgroundResource(R.drawable.button_round_corners_light_on);
-                        lightSmall1Bool = !lightSmall1Bool;
                     } else {
                         btSmall1.setBackgroundResource(R.drawable.button_round_corners_light_off);
-                        lightSmall1Bool = !lightSmall1Bool;
                     }
+                    lightSmall1Bool = !lightSmall1Bool;
                 }
             });
 
@@ -107,11 +116,10 @@ public class LightsFragment extends Fragment {
                     EnviarPedidos(LuzFrenteDir, lightSmall2Bool);
                     if (lightSmall2Bool) {
                         btSmall2.setBackgroundResource(R.drawable.button_round_corners_light_on);
-                        lightSmall2Bool = !lightSmall2Bool;
                     } else {
                         btSmall2.setBackgroundResource(R.drawable.button_round_corners_light_off);
-                        lightSmall2Bool = !lightSmall2Bool;
                     }
+                    lightSmall2Bool = !lightSmall2Bool;
                 }
             });
 
@@ -121,11 +129,10 @@ public class LightsFragment extends Fragment {
                     EnviarPedidos(LuzTrasEsq, lightSmall3Bool);
                     if (lightSmall3Bool) {
                         btSmall3.setBackgroundResource(R.drawable.button_round_corners_light_on);
-                        lightSmall3Bool = !lightSmall3Bool;
                     } else {
                         btSmall3.setBackgroundResource(R.drawable.button_round_corners_light_off);
-                        lightSmall3Bool = !lightSmall3Bool;
                     }
+                    lightSmall3Bool = !lightSmall3Bool;
                 }
             });
 
@@ -135,13 +142,103 @@ public class LightsFragment extends Fragment {
                     EnviarPedidos(LuzTrasDir, lightSmall4Bool);
                     if (lightSmall4Bool) {
                         btSmall4.setBackgroundResource(R.drawable.button_round_corners_light_on);
-                        lightSmall4Bool = !lightSmall4Bool;
                     } else {
                         btSmall4.setBackgroundResource(R.drawable.button_round_corners_light_off);
-                        lightSmall4Bool = !lightSmall4Bool;
                     }
+                    lightSmall4Bool = !lightSmall4Bool;
                 }
             });
+        }
+        preencherDados();
+    }
+
+    public void preencherDados(){
+        c_historico = db.query(false, Contrato.Historico.TABLE_NAME, Contrato.Historico.PROJECTION,
+                "id_equipamento = ? OR id_equipamento = ? OR id_equipamento = ? OR id_equipamento = ? OR id_equipamento = ?",
+                    new String[]{String.valueOf(LuzCentral), String.valueOf(LuzFrenteEsq), String.valueOf(LuzFrenteDir),
+                            String.valueOf(LuzTrasEsq), String.valueOf(LuzTrasDir)}, null, null, null, null);
+
+        c_historico.moveToFirst();
+
+        array_equipamento = new int[c_historico.getCount()];
+        array_valor = new int[c_historico.getCount()];
+
+        int i = 0;
+        if(c_historico.getCount() > 0) {
+            c_historico.moveToFirst();
+            while (!c_historico.isAfterLast()){
+                array_equipamento[i] = c_historico.getInt(1);
+                array_valor[i] = c_historico.getInt(2);
+                c_historico.moveToNext();
+                i++;
+            }
+        }
+
+        escolherDados();
+    }
+
+    public void  escolherDados(){
+
+        for(int i=0; i<=(array_equipamento.length-1);i++){
+            if(array_equipamento[i] == LuzCentral){
+                lightCentralBool = (array_valor[i] != 0);
+            }
+            else if(array_equipamento[i] == LuzFrenteEsq){
+                lightSmall1Bool = (array_valor[i] != 0);
+            }
+            else if(array_equipamento[i] == LuzFrenteDir){
+                lightSmall2Bool = (array_valor[i] != 0);
+            }
+            else if(array_equipamento[i] == LuzTrasEsq){
+                lightSmall3Bool = (array_valor[i] != 0);
+            }
+            else if(array_equipamento[i] == LuzTrasDir){
+                lightSmall4Bool = (array_valor[i] != 0);
+            }
+        }
+        mostrarDados();
+    }
+
+    public void mostrarDados(){
+
+        if (lightCentralBool) {
+            btCentral.setBackgroundResource(R.drawable.button_round_corners_light_on);
+            lightCentralBool = !lightCentralBool;
+        } else {
+            btCentral.setBackgroundResource(R.drawable.button_round_corners_light_off);
+            lightCentralBool = !lightCentralBool;
+        }
+
+        if (lightSmall1Bool) {
+            btSmall1.setBackgroundResource(R.drawable.button_round_corners_light_on);
+            lightSmall1Bool = !lightSmall1Bool;
+        } else {
+            btSmall1.setBackgroundResource(R.drawable.button_round_corners_light_off);
+            lightSmall1Bool = !lightSmall1Bool;
+        }
+
+        if (lightSmall2Bool) {
+            btSmall2.setBackgroundResource(R.drawable.button_round_corners_light_on);
+            lightSmall2Bool = !lightSmall2Bool;
+        } else {
+            btSmall2.setBackgroundResource(R.drawable.button_round_corners_light_off);
+            lightSmall2Bool = !lightSmall2Bool;
+        }
+
+        if (lightSmall3Bool) {
+            btSmall3.setBackgroundResource(R.drawable.button_round_corners_light_on);
+            lightSmall3Bool = !lightSmall3Bool;
+        } else {
+            btSmall3.setBackgroundResource(R.drawable.button_round_corners_light_off);
+            lightSmall3Bool = !lightSmall3Bool;
+        }
+
+        if (lightSmall4Bool) {
+            btSmall4.setBackgroundResource(R.drawable.button_round_corners_light_on);
+            lightSmall4Bool = !lightSmall4Bool;
+        } else {
+            btSmall4.setBackgroundResource(R.drawable.button_round_corners_light_off);
+            lightSmall4Bool = !lightSmall4Bool;
         }
     }
 

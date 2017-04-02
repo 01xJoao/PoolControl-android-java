@@ -3,6 +3,7 @@ package joaopalma.android.poolcontrol;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,6 +15,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,24 +50,18 @@ public class HomeFragment extends Fragment {
     int cobertura = 1;
     int luzCentral = 8;
 
-    String d_cobertura = "d_1";
-    String d_luzCentral = "d_8";
-
-    int valorLuzCentral = 0;
-    int valorCobertura = 0;
+    int valorLuzCentral;
+    int valorCobertura;
 
     SwitchCompat switchLight;
     SwitchCompat switchCobertura;
 
-    ArrayList ArrayEquipamento;
-    ArrayList<Integer> ArrayValor;
-
     DB mDbHelper;
     SQLiteDatabase db;
+    Cursor c_historico;
 
-    boolean process_switch;
-
-    boolean actualizado = false;
+    int array_equipamento[];
+    int array_valor[];
 
     public HomeFragment() {
     }
@@ -78,25 +74,10 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ArrayEquipamento = new ArrayList();
-        ArrayValor = new ArrayList<Integer>();
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(!actualizado) {
-                    ActualizarDados();
-                    actualizado = true;
-                }
-            }
-        }, 2000);
-
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
@@ -106,86 +87,94 @@ public class HomeFragment extends Fragment {
 
         getActivity().setTitle("PoolControl");
 
-        process_switch = true;
+        switchCobertura = (SwitchCompat) getActivity().findViewById(R.id.switch_cobertura);
+        switchLight = (SwitchCompat) getActivity().findViewById(R.id.switch_light);
+        layout = (PullRefreshLayout) getActivity().findViewById(R.id.swipeRefreshLayout);
+
+        layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                layout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        preencherDados();
+                        layout.setRefreshing(false);
+                    }
+                }, 3000);
+            }
+        });
+        layout.setColorSchemeColors(Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE);
+        layout.setRefreshDrawable(new SmartisanDrawable(getActivity(), layout));
+
+
+        switchCobertura.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (switchCobertura.isPressed()) {
+                    int myInt = (isChecked) ? 1 : 0;
+                    EnviarPedido(cobertura, myInt);
+                }
+            }
+        });
+
+
+        switchLight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (switchLight.isPressed()) {
+                    int myInt = (isChecked) ? 1 : 0;
+                    EnviarPedido(luzCentral, myInt);
+                }
+            }
+        });
 
         mDbHelper = new DB(getActivity());
         db = mDbHelper.getReadableDatabase();
 
-        /* SHARED PREF*/
-        if (isAdded()) {
-
-                layout = (PullRefreshLayout) getActivity().findViewById(R.id.swipeRefreshLayout);
-                layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
-                        layout.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                ActualizarDados();
-                                layout.setRefreshing(false);
-                            }
-                        }, 3000);
-                    }
-                });
-                layout.setColorSchemeColors(Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE);
-                layout.setRefreshDrawable(new SmartisanDrawable(getActivity(), layout));
-
-                switchCobertura = (SwitchCompat) getActivity().findViewById(R.id.switch_cobertura);
-                switchCobertura.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (process_switch) {
-                        int myInt = (isChecked) ? 1 : 0;
-                        EnviarPedido(cobertura, myInt);
-                    }
-                    }
-                });
-
-                switchLight = (SwitchCompat) getActivity().findViewById(R.id.switch_light);
-                switchLight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (process_switch) {
-                        int myInt = (isChecked) ? 1 : 0;
-                        EnviarPedido(luzCentral, myInt);
-                    }
-                    }
-                });
-        }
-        /* Actualizar DADOS*/
-
-        //ActualizarDados();
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                preencherDados();
+            }
+        }, 1500);
     }
 
-    public void  ActualizarDados(){
-        Toast.makeText(getActivity(),"Dados Carregados", Toast.LENGTH_SHORT).show();
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+    public void preencherDados(){
+        c_historico = db.query(false, Contrato.Historico.TABLE_NAME, Contrato.Historico.PROJECTION,
+                "id_equipamento = ? OR id_equipamento = ?", new String[]{String.valueOf(cobertura),String.valueOf(luzCentral)}, null, null, null, null);
 
-        ArrayEquipamento.clear();
-        ArrayValor.clear();
 
-        valorLuzCentral = 0;
-        valorCobertura = 0;
+        array_equipamento = new int[c_historico.getCount()];
+        array_valor = new int[c_historico.getCount()];
 
-        int size = sharedPref.getInt("equipamentos" + "_size", 0);
-
-        for (int i = 0; i < size; i++) {
-            ArrayEquipamento.add(sharedPref.getString("id_equipamento" + "_" + i, null));
-            ArrayValor.add(sharedPref.getInt("valor" + "_" + i, 0));
-        }
-
-        for(int i=0; i<=(ArrayEquipamento.size()-1);i++){
-            if(ArrayEquipamento.get(i).equals(d_cobertura)){
-                valorCobertura = ArrayValor.get(i);
+        int i = 0;
+        if(c_historico.getCount() > 0) {
+            c_historico.moveToFirst();
+            while (!c_historico.isAfterLast()){
+                array_equipamento[i] = c_historico.getInt(1);
+                array_valor[i] = c_historico.getInt(2);
+                c_historico.moveToNext();
+                i++;
             }
-            if(ArrayEquipamento.get(i).equals(d_luzCentral)){
-                valorLuzCentral = ArrayValor.get(i);
+        }
+        EscolherDados();
+    }
+
+    public void  EscolherDados(){
+
+        for(int i=0; i<=(array_equipamento.length-1);i++){
+            if(array_equipamento[i] == cobertura){
+                valorCobertura = array_valor[i];
+            }
+            if(array_equipamento[i] == luzCentral){
+                valorLuzCentral = array_valor[i];
             }
         }
         MostrarDados();
     }
+
     public void MostrarDados(){
-        process_switch = false;
         if(valorLuzCentral == 1)
             switchLight.setChecked(true);
         else
@@ -193,10 +182,8 @@ public class HomeFragment extends Fragment {
 
         if(valorCobertura == 1)
             switchCobertura.setChecked(true);
-        else {
+        else
             switchCobertura.setChecked(false);
-        }
-        process_switch = true;
     }
 
     public void EnviarPedido(final int equipamento, final int valor){
@@ -218,8 +205,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getActivity(),"Erro: " + String.valueOf(error), Toast.LENGTH_LONG).show();
-                process_switch = false;
-
                 if(equipamento == cobertura){
                     if(valor == 0)
                         switchCobertura.setChecked(true);
@@ -232,7 +217,6 @@ public class HomeFragment extends Fragment {
                     else
                         switchLight.setChecked(false);
                 }
-                process_switch = true;
             }
         }) {
             @Override
