@@ -49,19 +49,32 @@ public class HomeFragment extends Fragment {
 
     int cobertura = 1;
     int luzCentral = 8;
+    int sensor_temp = 7;
+    int sensor_ph = 13;
+    int sensor_cloro = 14;
 
     int valorLuzCentral;
     int valorCobertura;
+    float valorSensorTemp;
+    float valorSensorPh;
+    float valorSensorCloro;
 
     SwitchCompat switchLight;
     SwitchCompat switchCobertura;
 
     DB mDbHelper;
     SQLiteDatabase db;
-    Cursor c_historico;
+    Cursor c_historico, c_sensor;
 
     int array_equipamento[];
     int array_valor[];
+
+    int array_sensor[];
+    float array_sensor_valor[];
+
+    TextView ButtonTempValue;
+    TextView ButtonphValue;
+    TextView ButtonCloroValue;
 
     public HomeFragment() {
     }
@@ -85,7 +98,11 @@ public class HomeFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getActivity().setTitle("PoolControl");
+        getActivity().setTitle(getResources().getString(R.string.app_name));
+
+        ButtonTempValue = (TextView) getActivity().findViewById(R.id.textView_valueTemp);
+        ButtonphValue = (TextView) getActivity().findViewById(R.id.textView_valuePh);
+        ButtonCloroValue = (TextView) getActivity().findViewById(R.id.textView_valueCloro);
 
         switchCobertura = (SwitchCompat) getActivity().findViewById(R.id.switch_cobertura);
         switchLight = (SwitchCompat) getActivity().findViewById(R.id.switch_light);
@@ -137,7 +154,7 @@ public class HomeFragment extends Fragment {
             public void run() {
                 preencherDados();
             }
-        }, 1500);
+        }, 1000);
     }
 
     public void preencherDados(){
@@ -158,6 +175,24 @@ public class HomeFragment extends Fragment {
                 i++;
             }
         }
+
+
+        c_sensor = db.query(false, Contrato.Sensor.TABLE_NAME, Contrato.Sensor.PROJECTION, null , null, null, null, null, null);
+
+        array_sensor = new int[c_sensor.getCount()];
+        array_sensor_valor = new float[c_sensor.getCount()];
+
+        int j = 0;
+        if(c_sensor.getCount() > 0) {
+            c_sensor.moveToFirst();
+            while (!c_sensor.isAfterLast()){
+                array_sensor[j] = c_sensor.getInt(1);
+                array_sensor_valor[j] = c_sensor.getFloat(2);
+                c_sensor.moveToNext();
+                j++;
+            }
+        }
+
         EscolherDados();
     }
 
@@ -167,10 +202,23 @@ public class HomeFragment extends Fragment {
             if(array_equipamento[i] == cobertura){
                 valorCobertura = array_valor[i];
             }
-            if(array_equipamento[i] == luzCentral){
+            else if(array_equipamento[i] == luzCentral){
                 valorLuzCentral = array_valor[i];
             }
         }
+
+        for(int i=0; i<=(array_sensor.length-1); i++){
+            if(array_sensor[i] == sensor_temp){
+                valorSensorTemp = array_sensor_valor[i];
+            }
+            else if(array_sensor[i] == sensor_ph){
+                valorSensorPh = array_sensor_valor[i];
+            }
+            else if(array_sensor[i] == sensor_cloro){
+                valorSensorCloro = array_sensor_valor[i];
+            }
+        }
+
         MostrarDados();
     }
 
@@ -184,6 +232,12 @@ public class HomeFragment extends Fragment {
             switchCobertura.setChecked(true);
         else
             switchCobertura.setChecked(false);
+
+        /*Temp, pH, Cloro*/
+
+        ButtonTempValue.setText(""+Math.round(valorSensorTemp)+"º");
+        ButtonphValue.setText(""+valorSensorPh);
+        ButtonCloroValue.setText(""+valorSensorCloro);
     }
 
     public void EnviarPedido(final int equipamento, final int valor){
@@ -204,7 +258,7 @@ public class HomeFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(),"Erro: " + String.valueOf(error), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"Erro de ligação", Toast.LENGTH_LONG).show();
                 if(equipamento == cobertura){
                     if(valor == 0)
                         switchCobertura.setChecked(true);
@@ -252,6 +306,20 @@ public class HomeFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         //mListener = null;
+
+        if(!c_sensor.isClosed()){
+            c_sensor.close();
+            c_sensor = null;
+        }
+        if(!c_historico.isClosed()){
+            c_historico.close();
+            c_historico = null;
+        }
+
+        if(db.isOpen()){
+            db.close();
+            db = null;
+        }
     }
 
     /**

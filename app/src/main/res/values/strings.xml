@@ -6,7 +6,7 @@
     <string name="title_lights">Luzes</string>
     <string name="title_phchlorine">pH &amp; Cloro</string>
     <string name="action_settings">Definições</string>
-    <string name="settings_refresh">Actualizar</string>
+    <string name="settings_refresh">Sincronizar Dados</string>
     <string name="settings_notifications">Notificações</string>
     <string name="view_temp">Temperatura</string>
     <string name="view_engine">Motor</string>
@@ -21,6 +21,7 @@
     <string name="temp_card_tempatual">Temperatura atual</string>
     <string name="temp_change">Alterar Temperatura</string>
     <string name="button_change">Alterar</string>
+    <string name="button_changed">Alterando</string>
     <string name="temp_last_five">Últimas 5 horas</string>
     <string name="temp_last_eight">Últimas 8 horas</string>
     <string name="engines_tab_engine">MOTOR</string>
@@ -52,6 +53,7 @@
     <string name="pH">pH</string>
     <string name="cloro">Cloro</string>
     <string name="button_normalize">Normalizar</string>
+    <string name="button_normalized">Normalizando</string>
     <string name="recipiente">Recipiente:</string>
     <string name="ph_cloro_lastfive">Últimos 5 dias</string>
     <string name="phcloro_last_nine">Últimos 9 dias</string>

@@ -134,6 +134,7 @@
                                 android:src="@drawable/indicator"/>
 
                             <TextView
+                                android:id="@+id/ph_value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
@@ -239,6 +240,7 @@
                                 android:src="@drawable/indicator"/>
 
                             <TextView
+                                android:id="@+id/cloro_value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"

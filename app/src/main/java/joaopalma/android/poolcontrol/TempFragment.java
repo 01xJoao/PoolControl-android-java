@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -47,7 +48,7 @@ import joaopalma.android.poolcontrol.db.DB;
 
 public class TempFragment extends Fragment {
     // private OnFragmentInteractionListener mListener;
-    int temperatura = 20;
+    int temperatura;
     int Valor_TemperaturaDesejada;
     int equipamento = 7;
 
@@ -57,10 +58,12 @@ public class TempFragment extends Fragment {
 
     DB mDbHelper;
     SQLiteDatabase db;
-    Cursor c_historico;
+    Cursor c_historico, c_sensor;
 
     DiscreteSeekBar BarChangeTemp;
     Button buttonAlterarTemp;
+
+    TextView TempView;
 
     public TempFragment() {
     }
@@ -84,7 +87,9 @@ public class TempFragment extends Fragment {
 
         if (isAdded()) {
 
-            getActivity().setTitle("Temperatura");
+            getActivity().setTitle(getResources().getString(R.string.title_temp));
+
+            TempView = (TextView) getActivity().findViewById(R.id.temp_graus);
 
             layout = (PullRefreshLayout) getActivity().findViewById(R.id.swipeRefreshLayout);
             layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
@@ -93,6 +98,7 @@ public class TempFragment extends Fragment {
                     layout.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            preencherDados();
                             layout.setRefreshing(false);
                         }
                     }, 3000);
@@ -151,7 +157,7 @@ public class TempFragment extends Fragment {
             BarChangeTemp.setNumericTransformer(new DiscreteSeekBar.NumericTransformer() {
                 @Override
                 public int transform(int value) {
-                    buttonAlterarTemp.setText("ALTERAR");
+                    buttonAlterarTemp.setText(getResources().getString(R.string.button_change));
                     buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
                     Valor_TemperaturaDesejada = value;
                     return value;
@@ -175,12 +181,12 @@ public class TempFragment extends Fragment {
                                 db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
                                 if(Valor_TemperaturaDesejada > temperatura) {
                                     Toast.makeText(getActivity(), "Temperatura desejada " + Valor_TemperaturaDesejada + "º", Toast.LENGTH_SHORT).show();
-                                    buttonAlterarTemp.setText("ALTERANDO");
+                                    buttonAlterarTemp.setText(getResources().getString(R.string.button_changed));
                                     buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners_parar);
                                 }
                                 else {
                                     Toast.makeText(getActivity(), "Temperatura atual.", Toast.LENGTH_SHORT).show();
-                                    buttonAlterarTemp.setText("ALTERAR");
+                                    buttonAlterarTemp.setText(getResources().getString(R.string.button_change));
                                     buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
                                 }
                             }
@@ -188,7 +194,7 @@ public class TempFragment extends Fragment {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getActivity(), "Erro: " + String.valueOf(error), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Erro de ligação.", Toast.LENGTH_LONG).show();
                         }
                     }) {
                         @Override
@@ -210,8 +216,6 @@ public class TempFragment extends Fragment {
                 }
             });
 
-            /* RECEBER TEMPERATURA */
-
             preencherDados();
         }
 
@@ -222,20 +226,40 @@ public class TempFragment extends Fragment {
                 "id_equipamento = ?", new String[]{String.valueOf(equipamento)}, null, null, null, null);
         c_historico.moveToFirst();
         Valor_TemperaturaDesejada = c_historico.getInt(2);
-        mostrarDados();
+
+        /*c_sensor = db.query(false, Contrato.Sensor.TABLE_NAME, Contrato.Sensor.PROJECTION,
+                "id_equipamento = ?", new String[]{String.valueOf(equipamento)}, null, null, Contrato.Sensor._ID + " ASC", null);*/
+
+        c_sensor = db.query(false, Contrato.Sensor.TABLE_NAME, Contrato.Sensor.PROJECTION,
+                "id_equipamento = ?", new String[]{String.valueOf(equipamento)}, null, null, null, null);
+
+        c_sensor.moveToLast();
+        temperatura = c_sensor.getInt(2);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mostrarDados();
+            }
+        }, 100);
     }
 
     public void mostrarDados(){
         BarChangeTemp.setProgress(Valor_TemperaturaDesejada);
+        BarChangeTemp.setMin(temperatura);
 
         if(Valor_TemperaturaDesejada > temperatura) {
-            buttonAlterarTemp.setText("ALTERANDO");
+            buttonAlterarTemp.setText(getResources().getString(R.string.button_changed));
             buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners_parar);
         }
         else {
-            buttonAlterarTemp.setText("ALTERAR");
+            buttonAlterarTemp.setText(getResources().getString(R.string.button_change));
             buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
         }
+
+        TempView.setText(""+temperatura+"ºc");
+
     }
 
     @Override
@@ -259,6 +283,19 @@ public class TempFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         //mListener = null;
+        if(!c_sensor.isClosed()){
+            c_sensor.close();
+            c_sensor = null;
+        }
+        if(!c_historico.isClosed()){
+            c_historico.close();
+            c_historico = null;
+        }
+
+        if(db.isOpen()){
+            db.close();
+            db = null;
+        }
     }
 
     /**

@@ -76,7 +76,7 @@ public class LightsFragment extends Fragment {
         db = mDbHelper.getReadableDatabase();
 
         if (isAdded()) {
-            getActivity().setTitle("Luzes");
+            getActivity().setTitle(getResources().getString(R.string.title_lights));
 
             btCentral = (Button) getActivity().findViewById(R.id.LightCentral);
             btSmall1 = (Button) getActivity().findViewById(R.id.LightSmall1);
@@ -264,7 +264,7 @@ public class LightsFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(),"Erro: "+String.valueOf(error), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"Erro de ligação", Toast.LENGTH_LONG).show();
             }
         }) {
             @Override
@@ -306,6 +306,15 @@ public class LightsFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         //mListener = null;
+        if(!c_historico.isClosed()){
+            c_historico.close();
+            c_historico = null;
+        }
+
+        if(db.isOpen()){
+            db.close();
+            db = null;
+        }
     }
 
     /**

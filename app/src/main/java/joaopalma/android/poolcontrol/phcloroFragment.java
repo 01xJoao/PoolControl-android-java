@@ -2,6 +2,7 @@ package joaopalma.android.poolcontrol;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -48,11 +49,36 @@ public class phcloroFragment extends Fragment {
     int device_ph = 13;
     int device_cloro = 14;
 
+    float valorpH;
+    float valorCloro;
+
     String get_ph;
     String get_cloro;
 
     DB mDbHelper;
     SQLiteDatabase db;
+    Cursor c_sensor, c_historico;
+
+    TextView phValue;
+    TextView cloroValue;
+
+    int[] array_equipamento;
+    float[] array_valor;
+
+    int[] array_equipamento_historico;
+    int[] array_valor_historico;
+
+    ImageView indicator;
+    ImageView indicator_cloro;
+
+    Button NormalizarPH;
+    Button NormalizarCloro;
+
+    double MAX_PH = 8;
+    double MAX_CLORO = 6;
+
+    int valorpHDesejado;
+    int valorCloroDesejado;
 
     public phcloroFragment() {
     }
@@ -76,7 +102,15 @@ public class phcloroFragment extends Fragment {
 
         if (isAdded()) {
 
-            getActivity().setTitle("pH & Cloro");
+            getActivity().setTitle(getResources().getString(R.string.title_phchlorine));
+
+            phValue = (TextView) getActivity().findViewById(R.id.ph_value);
+            cloroValue = (TextView) getActivity().findViewById(R.id.cloro_value);
+            NormalizarPH = (Button) getActivity().findViewById(R.id.normalizar_ph);
+            NormalizarCloro = (Button) getActivity().findViewById(R.id.normalizar_cloro);
+
+            /* Receber valores*/
+            preencherDados();
 
             layout = (PullRefreshLayout) getActivity().findViewById(R.id.swipeRefreshLayout);
             layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
@@ -85,6 +119,7 @@ public class phcloroFragment extends Fragment {
                     layout.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            preencherDados();
                             layout.setRefreshing(false);
                         }
                     }, 3000);
@@ -124,24 +159,48 @@ public class phcloroFragment extends Fragment {
             });
 
 
-        /* Enviar POST*/
-
-            Button NormalizarPH = (Button) getActivity().findViewById(R.id.normalizar_ph);
-            Button NormalizarCloro = (Button) getActivity().findViewById(R.id.normalizar_cloro);
+            /* Enviar POST*/
 
             NormalizarPH.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    EnviarPedidosGET(device_ph, "ph");
-                    Toast.makeText(getActivity(), "Pedido de normalização pH", Toast.LENGTH_SHORT).show();
+
+                    if(valorpHDesejado != 0){
+                        valorpHDesejado = 0;
+                        EnviarPedidosPOST(device_ph, "ph");
+                    }
+                    else {
+                        if (valorpH < MAX_PH / 2) {
+                            valorpHDesejado = 1;
+                            EnviarPedidosGET(device_ph, "ph");
+                            Toast.makeText(getActivity(), "Pedido de normalização pH", Toast.LENGTH_SHORT).show();
+                        } else {
+                            NormalizarPH.setText(getResources().getString(R.string.button_normalize));
+                            NormalizarPH.setBackgroundResource(R.drawable.button_round_corners_normalize);
+                            Toast.makeText(getActivity(), "Valor de pH demasiado alto para normalizar", Toast.LENGTH_LONG).show();
+                        }
+                    }
                 }
             });
 
             NormalizarCloro.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    EnviarPedidosGET(device_cloro, "cloro");
-                    Toast.makeText(getActivity(), "Pedido de normalização Cloro", Toast.LENGTH_SHORT).show();
+                    if(valorCloroDesejado != 0){
+                        valorCloroDesejado = 0;
+                        EnviarPedidosPOST(device_cloro, "cloro");
+                    }
+                    else {
+                        if (valorCloro < MAX_CLORO / 2) {
+                            valorCloroDesejado = 1;
+                            EnviarPedidosGET(device_cloro, "cloro");
+                            Toast.makeText(getActivity(), "Pedido de normalização Cloro", Toast.LENGTH_SHORT).show();
+                        } else {
+                            NormalizarCloro.setText(getResources().getString(R.string.button_normalize));
+                            NormalizarPH.setBackgroundResource(R.drawable.button_round_corners_normalize);
+                            Toast.makeText(getActivity(), "Valor de Cloro demasiado alto para normalizar", Toast.LENGTH_LONG).show();
+                        }
+                    }
                 }
             });
 
@@ -170,11 +229,13 @@ public class phcloroFragment extends Fragment {
             series1.setColor(Color.parseColor("#E6D341"));
             graph.addSeries(series1);
 
+            /* Gráfico nos Controlos*/
+
             // Find the components
-            final ScArcGauge gauge = (ScArcGauge) this.getActivity().findViewById(R.id.gauge);
+            final ScArcGauge gauge = (ScArcGauge) getActivity().findViewById(R.id.gauge);
             assert gauge != null;
 
-            final ImageView indicator = (ImageView) this.getActivity().findViewById(R.id.indicator);
+            indicator = (ImageView) getActivity().findViewById(R.id.indicator);
             assert indicator != null;
 
             // Set the center pivot for a right rotation
@@ -183,7 +244,7 @@ public class phcloroFragment extends Fragment {
 
             // If you set the value from the xml that not produce an event so I will change the
             // value from code.
-            gauge.setHighValue(30);
+            gauge.setHighValue(Math.round((100*valorpH)/MAX_PH));
 
             // Each time I will change the value I must write it inside the counter text.
             gauge.setOnEventListener(new ScGauge.OnEventListener() {
@@ -194,6 +255,111 @@ public class phcloroFragment extends Fragment {
                     indicator.setRotation(angle);
                 }
             });
+
+            // Find the components
+            final ScArcGauge gauge_cloro = (ScArcGauge) getActivity().findViewById(R.id.gauge_cloro);
+            assert gauge_cloro != null;
+
+            indicator_cloro = (ImageView) getActivity().findViewById(R.id.indicator_cloro);
+            assert indicator != null;
+
+            // Set the center pivot for a right rotation
+            indicator_cloro.setPivotX(30f);
+            indicator_cloro.setPivotY(30f);
+
+            // If you set the value from the xml that not produce an event so I will change the
+            // value from code.
+            gauge_cloro.setHighValue(Math.round((100*valorCloro)/MAX_CLORO));
+
+            // Each time I will change the value I must write it inside the counter text.
+            gauge_cloro.setOnEventListener(new ScGauge.OnEventListener() {
+                @Override
+                public void onValueChange(float lowValue, float highValue) {
+                    // Convert the percentage value in an angle
+                    float angle = gauge_cloro.percentageToAngle(highValue);
+                    indicator_cloro.setRotation(angle);
+                }
+            });
+        }
+    }
+
+    public void preencherDados(){
+
+        c_sensor = db.query(false, Contrato.Sensor.TABLE_NAME, Contrato.Sensor.PROJECTION,
+                "id_equipamento = ? OR id_equipamento = ?",new String[]{String.valueOf(device_ph),String.valueOf(device_cloro)}, null, null, null, null );
+
+        int i = 0;
+        array_equipamento = new int[c_sensor.getCount()];
+        array_valor = new float[c_sensor.getCount()];
+
+        if(c_sensor.getCount() > 0){
+            c_sensor.moveToFirst();
+            while (!c_sensor.isAfterLast()){
+                array_equipamento[i] = c_sensor.getInt(1);
+                array_valor[i] = c_sensor.getFloat(2);
+                c_sensor.moveToNext();
+                i++;
+            }
+        }
+
+        c_historico = db.query(false, Contrato.Historico.TABLE_NAME, Contrato.Historico.PROJECTION,
+                "id_equipamento = ? OR id_equipamento = ?",new String[]{String.valueOf(device_ph),String.valueOf(device_cloro)}, null, null, null, null );
+
+        int j=0;
+        array_equipamento_historico = new int[c_historico.getCount()];
+        array_valor_historico = new int[c_historico.getCount()];
+
+        if(c_historico.getCount() > 0){
+            c_historico.moveToFirst();
+            while(!c_historico.isAfterLast()){
+                array_equipamento_historico[j] = c_historico.getInt(1);
+                array_valor_historico[j] = c_historico.getInt(2);
+                c_historico.moveToNext();
+                j++;
+            }
+        }
+        EscolherDados();
+    }
+
+    public void EscolherDados(){
+        for(int i=0; i<=(array_equipamento.length-1);i++){
+            if(array_equipamento[i] == device_ph){
+                valorpH = array_valor[i];
+            }
+            else if(array_equipamento[i] == device_cloro){
+                valorCloro = array_valor[i];
+            }
+        }
+
+        for(int i=0; i<=(array_equipamento_historico.length-1);i++){
+            if(array_equipamento_historico[i] == device_ph){
+                valorpHDesejado = array_valor_historico[i];
+            }
+            else if(array_equipamento_historico[i] == device_cloro){
+                valorCloroDesejado = array_valor_historico[i];
+            }
+        }
+        MostrarDados();
+    }
+
+    public void MostrarDados(){
+        phValue.setText(""+valorpH);
+        cloroValue.setText(""+valorCloro);
+
+        if(valorpHDesejado != 0){
+            NormalizarPH.setText(getResources().getString(R.string.button_normalized));
+            NormalizarPH.setBackgroundResource(R.drawable.button_round_corners_parar);
+        }else{
+            NormalizarPH.setText(getResources().getString(R.string.button_normalize));
+            NormalizarPH.setBackgroundResource(R.drawable.button_round_corners_normalize);
+        }
+
+        if(valorCloroDesejado != 0){
+            NormalizarCloro.setText(getResources().getString(R.string.button_normalized));
+            NormalizarCloro.setBackgroundResource(R.drawable.button_round_corners_parar);
+        }else{
+            NormalizarCloro.setText(getResources().getString(R.string.button_normalize));
+            NormalizarCloro.setBackgroundResource(R.drawable.button_round_corners_normalize);
         }
     }
 
@@ -242,18 +408,53 @@ public class phcloroFragment extends Fragment {
                     JSONObject jsonoutput = new JSONObject(response);
                 } catch (JSONException ex) {
                     ContentValues cv = new ContentValues();
-                    if(sensor == "ph")
-                        cv.put(Contrato.Historico.COLUMN_VALOR, get_ph);
-                    else
-                        cv.put(Contrato.Historico.COLUMN_VALOR, get_cloro);
+                    if(sensor == "ph") {
+                        if(valorpHDesejado == 0){
+                            cv.put(Contrato.Historico.COLUMN_VALOR, valorpHDesejado);
+                            NormalizarPH.setText(getResources().getString(R.string.button_normalize));
+                            NormalizarPH.setBackgroundResource(R.drawable.button_round_corners_normalize);
+                        }
+                        else {
+                            cv.put(Contrato.Historico.COLUMN_VALOR, get_ph);
+                            NormalizarPH.setText(getResources().getString(R.string.button_normalized));
+                            NormalizarPH.setBackgroundResource(R.drawable.button_round_corners_parar);
+                            Toast.makeText(getActivity(), "A Normalizar", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    else {
+                        if(valorCloroDesejado == 0){
+                            cv.put(Contrato.Historico.COLUMN_VALOR, valorCloroDesejado);
+                            NormalizarCloro.setText(getResources().getString(R.string.button_normalize));
+                            NormalizarCloro.setBackgroundResource(R.drawable.button_round_corners_normalize);
+                        }
+                        else {
+                            cv.put(Contrato.Historico.COLUMN_VALOR, get_cloro);
+                            NormalizarCloro.setText(getResources().getString(R.string.button_normalized));
+                            NormalizarCloro.setBackgroundResource(R.drawable.button_round_corners_parar);
+                            Toast.makeText(getActivity(), "A Normalizar", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
                     db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
-                    Toast.makeText(getActivity(),"A Normalizar", Toast.LENGTH_SHORT).show();
+                    preencherDados();
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(),"Erro POST: "+String.valueOf(error), Toast.LENGTH_LONG).show();
+                if(sensor == "ph"){
+                    if(valorpHDesejado == 0)
+                        valorpHDesejado = 1;
+                    else
+                        valorpHDesejado = 0;
+                }
+                else{
+                    if(valorCloroDesejado == 0)
+                        valorCloroDesejado = 1;
+                    else
+                        valorCloroDesejado = 0;
+                }
+                Toast.makeText(getActivity(),"Erro de ligação", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -261,10 +462,18 @@ public class phcloroFragment extends Fragment {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("id_equipamento", String.valueOf(equipamento));
                 //params.put("time", String.valueOf(date));
-                if(sensor == "ph")
-                    params.put("valor", get_ph);
-                else
-                    params.put("valor", get_cloro);
+                if(sensor == "ph") {
+                    if(valorpHDesejado == 0)
+                        params.put("valor", String.valueOf(valorpHDesejado));
+                    else
+                        params.put("valor", get_ph);
+                }
+                else {
+                    if(valorCloroDesejado == 0)
+                        params.put("valor", String.valueOf(valorCloroDesejado));
+                    else
+                        params.put("valor", get_cloro);
+                }
                 return params;
             }
 
@@ -299,6 +508,19 @@ public class phcloroFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         // mListener = null;
+        if(!c_sensor.isClosed()){
+            c_sensor.close();
+            c_sensor = null;
+        }
+        if(!c_historico.isClosed()){
+            c_historico.close();
+            c_historico = null;
+        }
+
+        if(db.isOpen()){
+            db.close();
+            db = null;
+        }
     }
 
     /**

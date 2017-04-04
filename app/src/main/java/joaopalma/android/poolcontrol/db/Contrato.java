@@ -10,6 +10,7 @@ public class Contrato {
 
     private static final String TEXT_TYPE = " TEXT ";
     private static final String INT_TYPE = " INTEGER ";
+    private static final String REAL_TYPE = " REAL ";
 
     public Contrato() {}
 
@@ -59,7 +60,7 @@ public class Contrato {
                 "CREATE TABLE " + Sensor.TABLE_NAME + "(" +
                         Sensor._ID + INT_TYPE + " PRIMARY_KEY," +
                         Sensor.COLUMN_IDEQUIPAMENTO + INT_TYPE + "," +
-                        Sensor.COLUMN_VALOR + INT_TYPE + "," +
+                        Sensor.COLUMN_VALOR + REAL_TYPE + "," +
                         Sensor.CALUMN_TIME + TEXT_TYPE + ");";
 
         public static final String SQL_DROP_ENTRIES = "DROP TABLE " + Sensor.TABLE_NAME + ";";

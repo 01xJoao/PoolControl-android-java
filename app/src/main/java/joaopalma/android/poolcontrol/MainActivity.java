@@ -1,5 +1,6 @@
 package joaopalma.android.poolcontrol;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -26,6 +27,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +37,14 @@ import joaopalma.android.poolcontrol.db.DB;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    ArrayList<Integer> array_equipamento;
+    ArrayList<Double> array_valor;
+
+    DB mDbHelper;
+    SQLiteDatabase db;
+
+    boolean atualizar = false;
 
     HomeFragment hf = HomeFragment.newInstance();
     TempFragment tf = TempFragment.newInstance();
@@ -78,7 +89,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_refresh:
+            case R.id.action_refresh: {
+                PedidoGetSensor();
+                atualizar = true;
+            }
                 return true;
             case R.id.action_notifications:
                 //notifications();
@@ -97,31 +111,32 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         getSupportActionBar().setElevation(0);
 
-        // PedidoGET();
+        mDbHelper = new DB(MainActivity.this);
+        db = mDbHelper.getReadableDatabase();
+
+        array_equipamento = new ArrayList<>();
+        array_valor = new ArrayList<>();
+
+        PedidoGetSensor();
     }
 
-    /*public void PedidoGET(){
+    public void PedidoGetSensor(){
 
-       String url_get = "https://poolcontrol.000webhostapp.com/webservices/ws_get_historico.php";
+        String url = "https://poolcontrol.000webhostapp.com/webservices/ws_get_sensores.php";
 
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url_get, null, new Response.Listener<JSONObject>() {
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
                     JSONArray array = response.getJSONArray(Utils.param_dados);
-                    SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPref.edit();
-
-                    editor.clear();
-
-                    editor.putInt("equipamentos" + "_size", array.length());
 
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject obj = array.getJSONObject(i);
-                        editor.putString("id_equipamento"+ "_" + i, "d_" + obj.getString("id_equipamento"));
-                        editor.putInt("valor"+"_" + i, obj.getInt("valor"));
-                        editor.commit();
+                        array_equipamento.add(obj.getInt("id_equipamento"));
+                        array_valor.add(obj.getDouble("valor"));
                     }
+                    carregarSensorBD();
                 } catch(JSONException ex){}
             }
         }, new Response.ErrorListener() {
@@ -131,8 +146,25 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,"Erro GET: "+String.valueOf(error), Toast.LENGTH_LONG).show();
             }
         });
-
         MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsObjRequest);
 
-    }*/
+    }
+
+    public void carregarSensorBD(){
+
+        Calendar cal = Calendar.getInstance();
+        final int hour_x = cal.get(Calendar.HOUR_OF_DAY);
+        final int minute_x = cal.get(Calendar.MINUTE);
+
+        for(int i = 0; i <= array_equipamento.size()-1; i++) {
+            ContentValues cv = new ContentValues();
+            cv.put(Contrato.Sensor.COLUMN_IDEQUIPAMENTO, array_equipamento.get(i));
+            cv.put(Contrato.Sensor.COLUMN_VALOR, array_valor.get(i));
+            cv.put(Contrato.Sensor.CALUMN_TIME, hour_x + ":" + minute_x);
+            db.insert(Contrato.Sensor.TABLE_NAME, null, cv);
+        }
+        if(atualizar)
+            Toast.makeText(MainActivity.this,"Dados dos sensores atualizados.", Toast.LENGTH_LONG).show();
+    }
+
 }

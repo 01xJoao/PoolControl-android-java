@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -79,6 +80,7 @@ public class EnginesFragment extends DialogFragment {
 
     DB mDbHelper;
     SQLiteDatabase db;
+    Cursor c_historico, c_agendamento;
 
     /* Horas Picker*/
 
@@ -91,14 +93,11 @@ public class EnginesFragment extends DialogFragment {
     int hour_x;
     int minute_x;
 
-    boolean actualizado = false;
-
     public void showTimePickerDialog () {
         HrsTVAuto = (TextView) getActivity().findViewById(R.id.TV_Timepicker);
         HrsTVAutoRobot = (TextView) getActivity().findViewById(R.id.TV_Timepicker_Robot);
 
         Calendar cal = Calendar.getInstance();
-
         hour_x = cal.get(Calendar.HOUR_OF_DAY);
         minute_x = cal.get(Calendar.MINUTE);
 
@@ -161,7 +160,6 @@ public class EnginesFragment extends DialogFragment {
         }
     };
 
-
     public EnginesFragment() {
     }
 
@@ -185,7 +183,7 @@ public class EnginesFragment extends DialogFragment {
 
         if(isAdded()) {
 
-            getActivity().setTitle("Engenhos");
+            getActivity().setTitle(getResources().getString(R.string.title_engine));
 
             ReceberAgenda();
 
@@ -201,6 +199,7 @@ public class EnginesFragment extends DialogFragment {
                     layout.postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            //preencherDados();
                             layout.setRefreshing(false);
                         }
                     }, 3000);
@@ -383,7 +382,7 @@ public class EnginesFragment extends DialogFragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(),"Erro:  " + String.valueOf(error), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"Erro de ligação.", Toast.LENGTH_LONG).show();
                 process_switch = false;
                 if(equipamento == motor_automatico){
                     if(valor == 0)
@@ -549,6 +548,20 @@ public class EnginesFragment extends DialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
+/*        if(!c_historico.isClosed()){
+            c_historico.close();
+            c_historico = null;
+        }
+
+        if(!c_agendamento.isClosed()){
+            c_agendamento.close();
+            c_agendamento = null;
+        }*/
+
+        if(db.isOpen()){
+            db.close();
+            db = null;
+        }
     }
 
     /**
