@@ -154,7 +154,7 @@ public class HomeFragment extends Fragment {
             public void run() {
                 preencherDados();
             }
-        }, 1000);
+        }, 500);
     }
 
     public void preencherDados(){
@@ -242,7 +242,7 @@ public class HomeFragment extends Fragment {
 
     public void EnviarPedido(final int equipamento, final int valor){
 
-        String url = "https://poolcontrol.000webhostapp.com/webservices/ws_insert_historico.php";
+        String url = "http://www.myapps.shared.town/webservices/ws_insert_historico.php";
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override

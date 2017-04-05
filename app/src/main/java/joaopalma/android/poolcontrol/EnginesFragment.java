@@ -58,9 +58,10 @@ import joaopalma.android.poolcontrol.db.DB;
 public class EnginesFragment extends DialogFragment {
 
     ArrayList<String> enginesHrs;
-    ArrayList<String> enginesDuration;
+    ArrayList<Integer> enginesDuration;
     ArrayList<String> robotHrs;
-    ArrayList<String> robotDuration;
+    ArrayList<Integer> robotDuration;
+
     PullRefreshLayout layout;
 
     boolean process_switch;
@@ -77,6 +78,9 @@ public class EnginesFragment extends DialogFragment {
 
     SwitchCompat switchEngine;
     SwitchCompat switchRobot;
+
+    Button btnMotorManual;
+    Button btnRoboManual;
 
     DB mDbHelper;
     SQLiteDatabase db;
@@ -185,7 +189,7 @@ public class EnginesFragment extends DialogFragment {
 
             getActivity().setTitle(getResources().getString(R.string.title_engine));
 
-            ReceberAgenda();
+            //ReceberAgenda();
 
             enginesHrs = new ArrayList<>();
             enginesDuration = new ArrayList<>();
@@ -269,8 +273,8 @@ public class EnginesFragment extends DialogFragment {
 
             /* POST & BOTOES */
 
-            Button btnMotorManual = (Button) getActivity().findViewById(R.id.start_engineManual);
-            Button btnRoboManual = (Button) getActivity().findViewById(R.id.start_robotManual);
+            btnMotorManual = (Button) getActivity().findViewById(R.id.start_engineManual);
+            btnRoboManual = (Button) getActivity().findViewById(R.id.start_robotManual);
 
             btnMotorManual.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -360,6 +364,63 @@ public class EnginesFragment extends DialogFragment {
                 }
             });
         }
+
+        preencherDados();
+    }
+
+
+    public void preencherDados(){
+        c_agendamento = db.query(false, Contrato.Agendamento.TABLE_NAME, Contrato.Agendamento.PROJECTION,
+                "id_equipamento = ? OR id_equipamento = ?",new String[]{String.valueOf(motor_automatico),String.valueOf(robo_automatico)}, null, null, null, null );
+
+        if(c_agendamento.getCount() > 0){
+            c_agendamento.moveToFirst();
+            while (!c_agendamento.isAfterLast()){
+                if(c_agendamento.getInt(1) == motor_automatico) {
+                    enginesHrs.add(c_agendamento.getString(2));
+                    enginesDuration.add(c_agendamento.getInt(3));
+                }
+                else {
+                    robotHrs.add(c_agendamento.getString(2));
+                    robotDuration.add(c_agendamento.getInt(3));
+                }
+                c_agendamento.moveToNext();
+            }
+        }
+        mostrarDados();
+    }
+
+    public void mostrarDados(){
+
+        final String [] ArrayenginesHrs = enginesHrs.toArray(new String[enginesHrs.size()]);
+        final String [] ArrayenginesDuration = enginesDuration.toArray(new String[enginesDuration.size()]);
+
+        final String [] ArrayrobotHrs = robotHrs.toArray(new String[robotHrs.size()]);
+        final String [] ArrayrobotDuration = robotDuration.toArray(new String[robotDuration.size()]);
+
+        /* ENGINE AND ROBOT LIST VIEWS*/
+
+        ListView lvEngine = (ListView) getActivity().findViewById(R.id.engines_listview_engine);
+        Adapter adapterEngine = new Adapter(getActivity(), ArrayenginesHrs, ArrayenginesDuration);
+        lvEngine.setAdapter(adapterEngine);
+
+        lvEngine.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getActivity(),ArrayenginesHrs[position], Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        ListView lvRobot = (ListView) getActivity().findViewById(R.id.engines_listview_robot);
+        Adapter adapterRobot = new Adapter(getActivity(), ArrayrobotHrs, ArrayrobotDuration);
+        lvRobot.setAdapter(adapterRobot);
+
+        lvRobot.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getActivity(),ArrayrobotHrs[position], Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void EnviarPedido(final int equipamento, final int valor){
@@ -433,6 +494,7 @@ public class EnginesFragment extends DialogFragment {
                     cv.put(Contrato.Agendamento.COLUMN_INICIO, time);
                     cv.put(Contrato.Agendamento.COLUMN_TEMPO, duracao);
                     db.insert(Contrato.Agendamento.TABLE_NAME, null, cv);
+                    preencherDados();
                 }
             }
         }, new Response.ErrorListener() {
@@ -460,7 +522,7 @@ public class EnginesFragment extends DialogFragment {
         MySingleton.getInstance(getActivity()).addToRequestQueue(stringRequest);
     }
 
-    public void ReceberAgenda(){
+    /*public void ReceberAgenda(){
 
         String url_get = "https://poolcontrol.000webhostapp.com/webservices/ws_get_agendamento.php";
 
@@ -498,41 +560,8 @@ public class EnginesFragment extends DialogFragment {
         });
 
         MySingleton.getInstance(getActivity()).addToRequestQueue(jsObjRequest);
-    }
+    }*/
 
-    public void MostrarAgenda(){
-
-        final String [] ArrayenginesHrs = enginesHrs.toArray(new String[enginesHrs.size()]);
-        final String [] ArrayenginesDuration = enginesDuration.toArray(new String[enginesDuration.size()]);
-
-        final String [] ArrayrobotHrs = robotHrs.toArray(new String[robotHrs.size()]);
-        final String [] ArrayrobotDuration = robotDuration.toArray(new String[robotDuration.size()]);
-
-        /* ENGINE AND ROBOT LIST VIEWS*/
-
-        ListView lvEngine = (ListView) getActivity().findViewById(R.id.engines_listview_engine);
-        Adapter adapterEngine = new Adapter(getActivity(), ArrayenginesHrs, ArrayenginesDuration);
-        lvEngine.setAdapter(adapterEngine);
-
-        lvEngine.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(),ArrayenginesHrs[position], Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        ListView lvRobot = (ListView) getActivity().findViewById(R.id.engines_listview_robot);
-        Adapter adapterRobot = new Adapter(getActivity(), ArrayrobotHrs, ArrayrobotDuration);
-        lvRobot.setAdapter(adapterRobot);
-
-        lvRobot.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(),ArrayrobotHrs[position], Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

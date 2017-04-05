@@ -49,7 +49,8 @@ import joaopalma.android.poolcontrol.db.DB;
 public class TempFragment extends Fragment {
     // private OnFragmentInteractionListener mListener;
     int temperatura;
-    int Valor_TemperaturaDesejada;
+    int Valor_tempDesejada;
+    int valor_barra;
     int equipamento = 7;
 
     PullRefreshLayout layout;
@@ -159,7 +160,7 @@ public class TempFragment extends Fragment {
                 public int transform(int value) {
                     buttonAlterarTemp.setText(getResources().getString(R.string.button_change));
                     buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
-                    Valor_TemperaturaDesejada = value;
+                    valor_barra = value;
                     return value;
                 }
             });
@@ -167,52 +168,15 @@ public class TempFragment extends Fragment {
             buttonAlterarTemp.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String url = "https://poolcontrol.000webhostapp.com/webservices/ws_insert_historico.php";
-                    Toast.makeText(getActivity(), "A alterar temperatura...", Toast.LENGTH_SHORT).show();
-                    StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            try {
-                                JSONObject jsonoutput = new JSONObject(response);
-                                //Toast.makeText(getActivity(), jsonoutput.getString(Utils.param_status), Toast.LENGTH_SHORT).show();
-                            } catch (JSONException ex) {
-                                ContentValues cv = new ContentValues();
-                                cv.put(Contrato.Historico.COLUMN_VALOR, Valor_TemperaturaDesejada);
-                                db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
-                                if(Valor_TemperaturaDesejada > temperatura) {
-                                    Toast.makeText(getActivity(), "Temperatura desejada " + Valor_TemperaturaDesejada + "º", Toast.LENGTH_SHORT).show();
-                                    buttonAlterarTemp.setText(getResources().getString(R.string.button_changed));
-                                    buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners_parar);
-                                }
-                                else {
-                                    Toast.makeText(getActivity(), "Temperatura atual.", Toast.LENGTH_SHORT).show();
-                                    buttonAlterarTemp.setText(getResources().getString(R.string.button_change));
-                                    buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
-                                }
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getActivity(), "Erro de ligação.", Toast.LENGTH_LONG).show();
-                        }
-                    }) {
-                        @Override
-                        protected Map<String, String> getParams() {
-                            Map<String, String> params = new HashMap<String, String>();
-                            params.put("id_equipamento", String.valueOf(equipamento));
-                            params.put("valor", String.valueOf(Valor_TemperaturaDesejada));
-                            return params;
-                        }
-
-                        @Override
-                        public Map<String, String> getHeaders() throws AuthFailureError {
-                            Map<String, String> params = new HashMap<String, String>();
-                            params.put("Content-Type", "application/x-www-form-urlencoded");
-                            return params;
-                        }
-                    };
-                    MySingleton.getInstance(getActivity()).addToRequestQueue(stringRequest);
+                    if(Valor_tempDesejada != 0){
+                        Valor_tempDesejada = 0;
+                        Toast.makeText(getActivity(), "A cancelar...", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Valor_tempDesejada = valor_barra;
+                        Toast.makeText(getActivity(), "A alterar temperatura...", Toast.LENGTH_SHORT).show();
+                    }
+                    enviarPostHistorico();
                 }
             });
 
@@ -225,10 +189,10 @@ public class TempFragment extends Fragment {
         c_historico = db.query(false, Contrato.Historico.TABLE_NAME, Contrato.Historico.PROJECTION,
                 "id_equipamento = ?", new String[]{String.valueOf(equipamento)}, null, null, null, null);
         c_historico.moveToFirst();
-        Valor_TemperaturaDesejada = c_historico.getInt(2);
+        Valor_tempDesejada = c_historico.getInt(2);
 
         /*c_sensor = db.query(false, Contrato.Sensor.TABLE_NAME, Contrato.Sensor.PROJECTION,
-                "id_equipamento = ?", new String[]{String.valueOf(equipamento)}, null, null, Contrato.Sensor._ID + " ASC", null);*/
+                "id_equipamento = ?", new String[]{String.valueOf(equipamento)}, null, null, Contrato.Sensor._ID + " DESC", "1");*/
 
         c_sensor = db.query(false, Contrato.Sensor.TABLE_NAME, Contrato.Sensor.PROJECTION,
                 "id_equipamento = ?", new String[]{String.valueOf(equipamento)}, null, null, null, null);
@@ -246,10 +210,14 @@ public class TempFragment extends Fragment {
     }
 
     public void mostrarDados(){
-        BarChangeTemp.setProgress(Valor_TemperaturaDesejada);
         BarChangeTemp.setMin(temperatura);
 
-        if(Valor_TemperaturaDesejada > temperatura) {
+        if(Valor_tempDesejada != 0)
+            BarChangeTemp.setProgress(Valor_tempDesejada);
+        else
+            BarChangeTemp.setProgress(temperatura);
+
+        if(Valor_tempDesejada > temperatura) {
             buttonAlterarTemp.setText(getResources().getString(R.string.button_changed));
             buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners_parar);
         }
@@ -260,6 +228,69 @@ public class TempFragment extends Fragment {
 
         TempView.setText(""+temperatura+"ºc");
 
+    }
+
+    public void enviarPostHistorico(){
+        String url = "http://www.myapps.shared.town/webservices/ws_insert_historico.php";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonoutput = new JSONObject(response);
+                    //Toast.makeText(getActivity(), jsonoutput.getString(Utils.param_status), Toast.LENGTH_SHORT).show();
+                } catch (JSONException ex) {
+                    ContentValues cv = new ContentValues();
+
+                    if(Valor_tempDesejada == 0){
+                        Toast.makeText(getActivity(), "Alteração cancelada.", Toast.LENGTH_SHORT).show();
+                        cv.put(Contrato.Historico.COLUMN_VALOR, Valor_tempDesejada);
+                        db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
+                    }
+                    else {
+                        if (Valor_tempDesejada > temperatura) {
+                            cv.put(Contrato.Historico.COLUMN_VALOR, Valor_tempDesejada);
+                            db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
+
+                            Toast.makeText(getActivity(), "Temperatura desejada " + Valor_tempDesejada + "º", Toast.LENGTH_SHORT).show();
+                            buttonAlterarTemp.setText(getResources().getString(R.string.button_changed));
+                            buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners_parar);
+                        } else {
+                            Toast.makeText(getActivity(), "Temperatura atual.", Toast.LENGTH_SHORT).show();
+                            buttonAlterarTemp.setText(getResources().getString(R.string.button_change));
+                            buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
+                        }
+                    }
+                    preencherDados();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getActivity(), "Erro de ligação.", Toast.LENGTH_LONG).show();
+                if(Valor_tempDesejada == 0)
+                    Valor_tempDesejada = 1;
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+
+                if(Valor_tempDesejada > temperatura || Valor_tempDesejada == 0) {
+                    params.put("id_equipamento", String.valueOf(equipamento));
+                    params.put("valor", String.valueOf(Valor_tempDesejada));
+                }
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-Type", "application/x-www-form-urlencoded");
+                return params;
+            }
+        };
+        MySingleton.getInstance(getActivity()).addToRequestQueue(stringRequest);
     }
 
     @Override

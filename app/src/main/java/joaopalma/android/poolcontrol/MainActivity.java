@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void PedidoGetSensor(){
 
-        String url = "https://poolcontrol.000webhostapp.com/webservices/ws_get_sensores.php";
+        String url = "http://www.myapps.shared.town/webservices/ws_get_sensores.php";
 
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {

@@ -366,7 +366,7 @@ public class phcloroFragment extends Fragment {
     public void EnviarPedidosGET(final int equipamento, final String sensor){
         /* GET */
 
-        String url_get = "https://poolcontrol.000webhostapp.com/webservices/ws_get_configuracao.php";
+        String url_get = "http://www.myapps.shared.town/webservices/ws_get_configuracao.php";
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url_get, null, new Response.Listener<JSONObject>() {
             @Override
@@ -399,7 +399,7 @@ public class phcloroFragment extends Fragment {
 
         /* POST */
 
-        String url_post = "https://poolcontrol.000webhostapp.com/webservices/ws_insert_historico.php";
+        String url_post = "http://www.myapps.shared.town/webservices/ws_insert_historico.php";
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url_post, new Response.Listener<String>() {
             @Override

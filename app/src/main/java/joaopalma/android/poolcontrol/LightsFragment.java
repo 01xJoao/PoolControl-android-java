@@ -247,7 +247,7 @@ public class LightsFragment extends Fragment {
 
         final int mylight = (light) ? 1 : 0;
 
-        String url = "https://poolcontrol.000webhostapp.com/webservices/ws_insert_historico.php";
+        String url = "http://www.myapps.shared.town/webservices/ws_insert_historico.php";
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
