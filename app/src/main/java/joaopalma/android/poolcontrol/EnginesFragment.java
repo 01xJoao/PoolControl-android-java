@@ -58,13 +58,11 @@ import joaopalma.android.poolcontrol.db.DB;
 public class EnginesFragment extends DialogFragment {
 
     ArrayList<String> enginesHrs;
-    ArrayList<Integer> enginesDuration;
+    ArrayList<String> enginesDuration;
     ArrayList<String> robotHrs;
-    ArrayList<Integer> robotDuration;
+    ArrayList<String> robotDuration;
 
     PullRefreshLayout layout;
-
-    boolean process_switch;
 
     int motor = 15;
     int robo = 16;
@@ -91,7 +89,13 @@ public class EnginesFragment extends DialogFragment {
     TextView HrsTVAuto;
     TextView HrsTVAutoRobot;
 
-    String hrsDevice;
+    int[] array_equipamento;
+    int[] array_valor;
+    int valorMotor;
+    int valorRobo;
+    int valorMotorAutomatico;
+    int valorRoboAutomatico;
+    boolean horaIgual = false;
 
     static final int DIALONG_ID = 0;
     int hour_x;
@@ -105,19 +109,23 @@ public class EnginesFragment extends DialogFragment {
         hour_x = cal.get(Calendar.HOUR_OF_DAY);
         minute_x = cal.get(Calendar.MINUTE);
 
-        if(minute_x >= 10) {
+        if (hour_x >= 10 && minute_x >= 10) {
             HrsTVAuto.setText(hour_x + ":" + minute_x);
             HrsTVAutoRobot.setText(hour_x + ":" + minute_x);
-        }
-        else{
+        } else if (hour_x >= 10 && minute_x < 10) {
             HrsTVAuto.setText(hour_x + ":0" + minute_x);
             HrsTVAutoRobot.setText(hour_x + ":0" + minute_x);
+        } else if (hour_x < 10 && minute_x >= 10) {
+            HrsTVAuto.setText("0" + hour_x + ":" + minute_x);
+            HrsTVAutoRobot.setText("0" + hour_x + ":" + minute_x);
+        } else {
+            HrsTVAuto.setText("0" + hour_x + ":0" + minute_x);
+            HrsTVAutoRobot.setText("0" + hour_x + ":0" + minute_x);
         }
 
         HrsTVAuto.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    hrsDevice = "motor";
                     onCreateDialog(0).show();
                 }
             }
@@ -126,7 +134,6 @@ public class EnginesFragment extends DialogFragment {
         HrsTVAutoRobot.setOnClickListener(new View.OnClickListener(){
                  @Override
                  public void onClick(View v) {
-                     hrsDevice = "robo";
                      onCreateDialog(0).show();
                  }
              }
@@ -145,21 +152,19 @@ public class EnginesFragment extends DialogFragment {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             hour_x = hourOfDay;
             minute_x = minute;
-            if (hrsDevice == "motor") {
-                if(minute_x >= 10) {
-                    HrsTVAuto.setText(hour_x + ":" + minute_x);
-                }
-                else{
-                    HrsTVAuto.setText(hour_x + ":0" + minute_x);
-                }
-            }
-            else {
-                if(minute_x >= 10) {
-                    HrsTVAutoRobot.setText(hour_x + ":" + minute_x);
-                }
-                else{
-                    HrsTVAutoRobot.setText(hour_x + ":0" + minute_x);
-                }
+
+            if (hour_x >= 10 && minute_x >= 10) {
+                HrsTVAuto.setText(hour_x + ":" + minute_x);
+                HrsTVAutoRobot.setText(hour_x + ":" + minute_x);
+            } else if (hour_x >= 10 && minute_x < 10) {
+                HrsTVAuto.setText(hour_x + ":0" + minute_x);
+                HrsTVAutoRobot.setText(hour_x + ":0" + minute_x);
+            } else if (hour_x < 10 && minute_x >= 10) {
+                HrsTVAuto.setText("0" + hour_x + ":" + minute_x);
+                HrsTVAutoRobot.setText("0" + hour_x + ":" + minute_x);
+            } else {
+                HrsTVAuto.setText("0" + hour_x + ":0" + minute_x);
+                HrsTVAutoRobot.setText("0" + hour_x + ":0" + minute_x);
             }
         }
     };
@@ -183,7 +188,6 @@ public class EnginesFragment extends DialogFragment {
 
         mDbHelper = new DB(getActivity());
         db = mDbHelper.getReadableDatabase();
-        process_switch = true;
 
         if(isAdded()) {
 
@@ -279,9 +283,15 @@ public class EnginesFragment extends DialogFragment {
             btnMotorManual.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getActivity(), "A iniciar motor", Toast.LENGTH_SHORT).show();
-                    duracaomotor = EngineManualSpinneer.getSelectedItemPosition();
-                    EnviarPedido(motor, duracaomotor + 1);
+                    if(valorMotor != 0){
+                        valorMotor = 0;
+                        EnviarPedido(motor, valorMotor);
+                    }
+                    else {
+                        Toast.makeText(getActivity(), "A iniciar motor", Toast.LENGTH_SHORT).show();
+                        duracaomotor = EngineManualSpinneer.getSelectedItemPosition();
+                        EnviarPedido(motor, duracaomotor + 1);
+                    }
                 }
 
             });
@@ -289,9 +299,15 @@ public class EnginesFragment extends DialogFragment {
             btnRoboManual.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getActivity(), "A iniciar robô", Toast.LENGTH_SHORT).show();
-                    duracaorobo = RobotManualSpinneer.getSelectedItemPosition();
-                    EnviarPedido(robo, duracaorobo + 1);
+                    if(valorRobo != 0){
+                        valorRobo = 0;
+                        EnviarPedido(robo, valorRobo);
+                    }
+                    else {
+                        Toast.makeText(getActivity(), "A iniciar robô", Toast.LENGTH_SHORT).show();
+                        duracaorobo = RobotManualSpinneer.getSelectedItemPosition();
+                        EnviarPedido(robo, duracaorobo + 1);
+                    }
                 }
 
             });
@@ -302,10 +318,10 @@ public class EnginesFragment extends DialogFragment {
             switchEngine.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (process_switch) {
-                        int myInt = (isChecked) ? 1 : 0;
-                        EnviarPedido(motor_automatico, myInt);
-                    }
+                if (switchEngine.isPressed()) {
+                    int myInt = (isChecked) ? 1 : 0;
+                    EnviarPedido(motor_automatico, myInt);
+                }
                 }
             });
 
@@ -313,10 +329,10 @@ public class EnginesFragment extends DialogFragment {
             switchRobot.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (switchRobot.isPressed()) {
                     int myInt = (isChecked) ? 1 : 0;
-                    if (process_switch) {
-                        EnviarPedido(robo_automatico, myInt);
-                    }
+                    EnviarPedido(robo_automatico, myInt);
+                }
                 }
             });
 
@@ -338,10 +354,22 @@ public class EnginesFragment extends DialogFragment {
                     } else {
                         time = "0" + String.valueOf(hour_x) + ":0" + String.valueOf(minute_x) + ":00";
                     }
-                    Toast.makeText(getActivity(), "A agendar..", Toast.LENGTH_SHORT).show();
-                    duracaomotor_automatico = EngineAutomaticSpinneer.getSelectedItemPosition();
-                    EnviarAgenda(motor_automatico, time, duracaomotor_automatico + 1);
-
+                    for(int i=0;i <= enginesHrs.size()-1;i++){
+                        if(enginesHrs.get(i).equals(time)){
+                            horaIgual = true;
+                            break;
+                        }else{
+                            horaIgual = false;
+                        }
+                    }
+                    if(horaIgual){
+                        Toast.makeText(getActivity(), "Esta hora já está marcada.", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(getActivity(), "A agendar..", Toast.LENGTH_SHORT).show();
+                        duracaomotor_automatico = EngineAutomaticSpinneer.getSelectedItemPosition();
+                        EnviarAgenda(motor_automatico, time, duracaomotor_automatico + 1);
+                    }
                 }
             });
 
@@ -358,9 +386,23 @@ public class EnginesFragment extends DialogFragment {
                     } else {
                         time = "0" + String.valueOf(hour_x) + ":0" + String.valueOf(minute_x) + ":00";
                     }
-                    Toast.makeText(getActivity(), "A agendar..", Toast.LENGTH_SHORT).show();
-                    duracaorobo_automatico = RobotAutomaticSpinneer.getSelectedItemPosition();
-                    EnviarAgenda(robo_automatico, time, duracaorobo_automatico + 1);
+
+                    for(int i=0;i <= robotHrs.size()-1;i++){
+                        if(robotHrs.get(i).equals(time)){
+                            horaIgual = true;
+                            break;
+                        }else{
+                            horaIgual = false;
+                        }
+                    }
+                    if(horaIgual){
+                        Toast.makeText(getActivity(), "Esta hora já está marcada.", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(getActivity(), "A agendar..", Toast.LENGTH_SHORT).show();
+                        duracaorobo_automatico = RobotAutomaticSpinneer.getSelectedItemPosition();
+                        EnviarAgenda(robo_automatico, time, duracaorobo_automatico + 1);
+                    }
                 }
             });
         }
@@ -370,21 +412,65 @@ public class EnginesFragment extends DialogFragment {
 
 
     public void preencherDados(){
+
+        /* HISTORICO*/
+
+        c_historico = db.query(false, Contrato.Historico.TABLE_NAME, Contrato.Historico.PROJECTION,
+                "id_equipamento = ? OR id_equipamento = ? OR id_equipamento = ? OR id_equipamento = ?",
+                    new String[]{String.valueOf(motor),String.valueOf(robo),String.valueOf(robo_automatico),String.valueOf(motor_automatico)}, null, null, null, null);
+
+        int j=0;
+        array_equipamento = new int[c_historico.getCount()];
+        array_valor = new int[c_historico.getCount()];
+
+        if(c_historico.getCount() > 0){
+            c_historico.moveToFirst();
+            while(!c_historico.isAfterLast()){
+                array_equipamento[j] = c_historico.getInt(1);
+                array_valor[j] = c_historico.getInt(2);
+                c_historico.moveToNext();
+                j++;
+            }
+        }
+
+        /* AGENDA*/
         c_agendamento = db.query(false, Contrato.Agendamento.TABLE_NAME, Contrato.Agendamento.PROJECTION,
-                "id_equipamento = ? OR id_equipamento = ?",new String[]{String.valueOf(motor_automatico),String.valueOf(robo_automatico)}, null, null, null, null );
+                "id_equipamento = ? OR id_equipamento = ?",new String[]{String.valueOf(motor_automatico),String.valueOf(robo_automatico)},
+                    null, null, Contrato.Agendamento.COLUMN_INICIO + " ASC", null );
+
+        enginesHrs.clear();
+        enginesDuration.clear();
+        robotHrs.clear();
+        robotDuration.clear();
 
         if(c_agendamento.getCount() > 0){
             c_agendamento.moveToFirst();
             while (!c_agendamento.isAfterLast()){
                 if(c_agendamento.getInt(1) == motor_automatico) {
                     enginesHrs.add(c_agendamento.getString(2));
-                    enginesDuration.add(c_agendamento.getInt(3));
+                    enginesDuration.add(c_agendamento.getString(3));
                 }
                 else {
                     robotHrs.add(c_agendamento.getString(2));
-                    robotDuration.add(c_agendamento.getInt(3));
+                    robotDuration.add(c_agendamento.getString(3));
                 }
                 c_agendamento.moveToNext();
+            }
+        }
+        escolherDados();
+    }
+
+    public void escolherDados(){
+
+        for(int i=0; i<=(array_equipamento.length-1);i++) {
+            if (array_equipamento[i] == motor) {
+                valorMotor = array_valor[i];
+            } else if (array_equipamento[i] == robo) {
+                valorRobo = array_valor[i];
+            }else if (array_equipamento[i] == motor_automatico) {
+                valorMotorAutomatico = array_valor[i];
+            }else if (array_equipamento[i] == robo_automatico) {
+                valorRoboAutomatico = array_valor[i];
             }
         }
         mostrarDados();
@@ -392,40 +478,47 @@ public class EnginesFragment extends DialogFragment {
 
     public void mostrarDados(){
 
-        final String [] ArrayenginesHrs = enginesHrs.toArray(new String[enginesHrs.size()]);
-        final String [] ArrayenginesDuration = enginesDuration.toArray(new String[enginesDuration.size()]);
+        if(valorMotorAutomatico == 1)
+            switchEngine.setChecked(true);
+        else
+            switchEngine.setChecked(false);
 
-        final String [] ArrayrobotHrs = robotHrs.toArray(new String[robotHrs.size()]);
-        final String [] ArrayrobotDuration = robotDuration.toArray(new String[robotDuration.size()]);
+        if(valorRoboAutomatico == 1)
+            switchRobot.setChecked(true);
+        else
+            switchRobot.setChecked(false);
+
+        if(valorMotor != 0){
+            btnMotorManual.setText(getResources().getString(R.string.btn_stop));
+            btnMotorManual.setBackgroundResource(R.drawable.button_round_corners_parar);
+        }else{
+            btnMotorManual.setText(getResources().getString(R.string.button_normalize));
+            btnMotorManual.setBackgroundResource(R.drawable.button_round_corners_engine);
+        }
+
+        if(valorRobo != 0){
+            btnRoboManual.setText(getResources().getString(R.string.btn_stop));
+            btnRoboManual.setBackgroundResource(R.drawable.button_round_corners_parar);
+        }else{
+            btnRoboManual.setText(getResources().getString(R.string.button_normalize));
+            btnRoboManual.setBackgroundResource(R.drawable.button_round_corners_robot);
+        }
 
         /* ENGINE AND ROBOT LIST VIEWS*/
 
         ListView lvEngine = (ListView) getActivity().findViewById(R.id.engines_listview_engine);
-        Adapter adapterEngine = new Adapter(getActivity(), ArrayenginesHrs, ArrayenginesDuration);
+        Adapter adapterEngine = new Adapter(getActivity(), motor_automatico,enginesHrs, enginesDuration);
         lvEngine.setAdapter(adapterEngine);
 
-        lvEngine.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(),ArrayenginesHrs[position], Toast.LENGTH_SHORT).show();
-            }
-        });
-
         ListView lvRobot = (ListView) getActivity().findViewById(R.id.engines_listview_robot);
-        Adapter adapterRobot = new Adapter(getActivity(), ArrayrobotHrs, ArrayrobotDuration);
+        Adapter adapterRobot = new Adapter(getActivity(), robo_automatico,robotHrs, robotDuration);
         lvRobot.setAdapter(adapterRobot);
 
-        lvRobot.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(),ArrayrobotHrs[position], Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     public void EnviarPedido(final int equipamento, final int valor){
 
-        String url = "https://poolcontrol.000webhostapp.com/webservices/ws_insert_historico.php";
+        String url = "http://www.myapps.shared.town/webservices/ws_insert_historico.php";
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -436,15 +529,25 @@ public class EnginesFragment extends DialogFragment {
                     ContentValues cv = new ContentValues();
                     cv.put(Contrato.Historico.COLUMN_VALOR, valor);
                     db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
-                    if(equipamento == motor || equipamento == robo)
-                        Toast.makeText(getActivity(), "Limpeza iniciada", Toast.LENGTH_SHORT).show();
+                    if(equipamento == motor) {
+                        if(valor !=0)
+                            Toast.makeText(getActivity(), "Limpeza iniciada.", Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(getActivity(), "Limpeza cancelada.", Toast.LENGTH_SHORT).show();
+                    }
+                    else if (equipamento == robo){
+                        if(valor !=0)
+                            Toast.makeText(getActivity(), "Limpeza iniciada.", Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(getActivity(), "Limpeza cancelada.", Toast.LENGTH_SHORT).show();
+                    }
+                    preencherDados();
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getActivity(),"Erro de ligação.", Toast.LENGTH_LONG).show();
-                process_switch = false;
                 if(equipamento == motor_automatico){
                     if(valor == 0)
                         switchEngine.setChecked(true);
@@ -457,7 +560,6 @@ public class EnginesFragment extends DialogFragment {
                     else
                         switchRobot.setChecked(false);
                 }
-                process_switch = true;
             }
         }) {
             @Override
@@ -480,7 +582,7 @@ public class EnginesFragment extends DialogFragment {
 
     public void EnviarAgenda(final int equipamento, final String time, final int duracao){
 
-        String url = "https://poolcontrol.000webhostapp.com/webservices/ws_insert_agendamento.php";
+        String url = "http://www.myapps.shared.town/webservices/ws_insert_agendamento.php";
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -577,15 +679,15 @@ public class EnginesFragment extends DialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-/*        if(!c_historico.isClosed()){
+       /* if(!c_historico.isClosed()){
             c_historico.close();
             c_historico = null;
-        }
+        }*/
 
         if(!c_agendamento.isClosed()){
             c_agendamento.close();
             c_agendamento = null;
-        }*/
+        }
 
         if(db.isOpen()){
             db.close();

@@ -176,7 +176,6 @@ public class HomeFragment extends Fragment {
             }
         }
 
-
         c_sensor = db.query(false, Contrato.Sensor.TABLE_NAME, Contrato.Sensor.PROJECTION, null , null, null, null, null, null);
 
         array_sensor = new int[c_sensor.getCount()];

@@ -161,6 +161,12 @@ public class TempFragment extends Fragment {
                     buttonAlterarTemp.setText(getResources().getString(R.string.button_change));
                     buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
                     valor_barra = value;
+
+                    if(Valor_tempDesejada != temperatura && valor_barra == Valor_tempDesejada){
+                        buttonAlterarTemp.setText(getResources().getString(R.string.button_changed));
+                        buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners_parar);
+                    }
+
                     return value;
                 }
             });
@@ -168,7 +174,7 @@ public class TempFragment extends Fragment {
             buttonAlterarTemp.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(Valor_tempDesejada != 0){
+                    if(Valor_tempDesejada != 0 && valor_barra == Valor_tempDesejada){
                         Valor_tempDesejada = 0;
                         Toast.makeText(getActivity(), "A cancelar...", Toast.LENGTH_SHORT).show();
                     }

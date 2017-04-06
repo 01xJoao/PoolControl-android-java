@@ -59,5 +59,6 @@
     <string name="phcloro_last_nine">Últimos 9 dias</string>
 
     <string name="next_clean">Próxima\nlimpeza</string>
+    <string name="btn_stop">Parar</string>
 
 </resources>
