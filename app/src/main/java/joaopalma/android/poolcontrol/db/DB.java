@@ -35,6 +35,8 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("insert into " + Contrato.Historico.TABLE_NAME + " values (13, '18', '0'); ");
 
         db.execSQL("insert into " + Contrato.Sensor.TABLE_NAME + " values (1, '7', '30', '0'); ");
+
+        db.execSQL("insert into " + Contrato.Agendamento.TABLE_NAME + " values (1, '17', '00:30:00', '1'); ");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){

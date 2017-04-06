@@ -36,7 +36,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,6 +56,8 @@ public class HomeFragment extends Fragment {
     int sensor_temp = 7;
     int sensor_ph = 13;
     int sensor_cloro = 14;
+    int agendaMotor = 17;
+    int agendaRobo = 18;
 
     int valorLuzCentral;
     int valorCobertura;
@@ -64,7 +70,11 @@ public class HomeFragment extends Fragment {
 
     DB mDbHelper;
     SQLiteDatabase db;
-    Cursor c_historico, c_sensor;
+    Cursor c_historico, c_sensor, c_agendamento;
+
+    int hour_x;
+    int minute_x;
+    String time;
 
     int array_equipamento[];
     int array_valor[];
@@ -72,9 +82,23 @@ public class HomeFragment extends Fragment {
     int array_sensor[];
     float array_sensor_valor[];
 
+    ArrayList<Integer> array_motor_agenda;
+    ArrayList<Integer> array_robot_agenda;
+    ArrayList<String> array_motor_agenda_time;
+    ArrayList<String> array_robot_agenda_time;
+
+    boolean HoraEncontradaMotor;
+    boolean HoraEncontradaRobot;
+
+    String finaltimeMotor;
+    String finaltimeRobot;
+
     TextView ButtonTempValue;
     TextView ButtonphValue;
     TextView ButtonCloroValue;
+
+    TextView MotorHour;
+    TextView RobotHour;
 
     public HomeFragment() {
     }
@@ -100,9 +124,16 @@ public class HomeFragment extends Fragment {
 
         getActivity().setTitle(getResources().getString(R.string.app_name));
 
+        array_motor_agenda = new ArrayList<>();
+        array_robot_agenda = new ArrayList<>();
+        array_motor_agenda_time = new ArrayList<>();
+        array_robot_agenda_time = new ArrayList<>();
+
         ButtonTempValue = (TextView) getActivity().findViewById(R.id.textView_valueTemp);
         ButtonphValue = (TextView) getActivity().findViewById(R.id.textView_valuePh);
         ButtonCloroValue = (TextView) getActivity().findViewById(R.id.textView_valueCloro);
+        MotorHour = (TextView) getActivity().findViewById(R.id.textView_valueEngine);
+        RobotHour = (TextView) getActivity().findViewById(R.id.textView_valueRobot);
 
         switchCobertura = (SwitchCompat) getActivity().findViewById(R.id.switch_cobertura);
         switchLight = (SwitchCompat) getActivity().findViewById(R.id.switch_light);
@@ -144,6 +175,22 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
+
+        /* Hora */
+
+        Calendar cal = Calendar.getInstance();
+        hour_x = cal.get(Calendar.HOUR_OF_DAY);
+        minute_x = cal.get(Calendar.MINUTE);
+
+        if (hour_x >= 10 && minute_x >= 10) {
+            time = hour_x + ":" + minute_x + ":00";
+        } else if (hour_x >= 10 && minute_x < 10) {
+            time = hour_x + ":0" + minute_x + ":00";
+        } else if (hour_x < 10 && minute_x >= 10) {
+            time = "0" + hour_x + ":" + minute_x + ":00";
+        } else {
+            time = "0" + hour_x + ":0" + minute_x + ":00";
+        }
 
         mDbHelper = new DB(getActivity());
         db = mDbHelper.getReadableDatabase();
@@ -192,6 +239,23 @@ public class HomeFragment extends Fragment {
             }
         }
 
+        c_agendamento = db.query(false, Contrato.Agendamento.TABLE_NAME, Contrato.Agendamento.PROJECTION, null, null, null, null, null, null);
+
+        if(c_agendamento.getCount() > 0){
+            c_agendamento.moveToFirst();
+            while (!c_agendamento.isAfterLast()){
+
+                if(c_agendamento.getInt(1) == agendaMotor){
+                    array_motor_agenda.add(c_agendamento.getInt(1));
+                    array_motor_agenda_time.add(c_agendamento.getString(2));
+                }
+                else{
+                    array_robot_agenda.add(c_agendamento.getInt(1));
+                    array_robot_agenda_time.add(c_agendamento.getString(2));
+                }
+                c_agendamento.moveToNext();
+            }
+        }
         EscolherDados();
     }
 
@@ -218,6 +282,44 @@ public class HomeFragment extends Fragment {
             }
         }
 
+        Collections.sort(array_motor_agenda_time);
+        Collections.sort(array_robot_agenda_time);
+
+
+        for(int i=0; i <= array_motor_agenda.size()-1; i++){
+            int timedb = Integer.parseInt(array_motor_agenda_time.get(i).replaceAll("[\\D]",""));
+            int timenow = Integer.parseInt(time.replaceAll("[\\D]",""));
+
+            if(timenow <= timedb){
+                finaltimeMotor = array_motor_agenda_time.get(i);
+                HoraEncontradaMotor = true;
+                break;
+            }
+            else{
+                HoraEncontradaMotor = false;
+            }
+        }
+
+        for(int i=0; i <= array_robot_agenda.size()-1; i++){
+            int timedb = Integer.parseInt(array_robot_agenda_time.get(i).replaceAll("[\\D]",""));
+            int timenow = Integer.parseInt(time.replaceAll("[\\D]",""));
+
+            if(timenow <= timedb){
+                finaltimeRobot = array_robot_agenda_time.get(i);
+                HoraEncontradaRobot = true;
+                break;
+            }
+            else{
+                HoraEncontradaRobot = false;
+            }
+        }
+
+        if(!HoraEncontradaMotor)
+            finaltimeMotor = array_motor_agenda_time.get(0);
+
+        if(!HoraEncontradaRobot)
+            finaltimeRobot = array_robot_agenda_time.get(0);
+
         MostrarDados();
     }
 
@@ -237,6 +339,9 @@ public class HomeFragment extends Fragment {
         ButtonTempValue.setText(""+Math.round(valorSensorTemp)+"º");
         ButtonphValue.setText(""+valorSensorPh);
         ButtonCloroValue.setText(""+valorSensorCloro);
+
+        MotorHour.setText(finaltimeMotor.substring(0, finaltimeMotor.length() - 3));
+        RobotHour.setText(finaltimeRobot.substring(0, finaltimeRobot.length() - 3));
     }
 
     public void EnviarPedido(final int equipamento, final int valor){
