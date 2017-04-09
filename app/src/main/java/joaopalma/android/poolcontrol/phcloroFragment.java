@@ -2,6 +2,8 @@ package joaopalma.android.poolcontrol;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -9,6 +11,8 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,6 +84,8 @@ public class phcloroFragment extends Fragment {
     int valorpHDesejado;
     int valorCloroDesejado;
 
+    SharedPreferences.Editor editor;
+
     public phcloroFragment() {
     }
 
@@ -99,6 +105,9 @@ public class phcloroFragment extends Fragment {
 
         mDbHelper = new DB(getActivity());
         db = mDbHelper.getReadableDatabase();
+
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
 
         if (isAdded()) {
 
@@ -166,8 +175,23 @@ public class phcloroFragment extends Fragment {
                 public void onClick(View v) {
 
                     if(valorpHDesejado != 0){
-                        valorpHDesejado = 0;
-                        EnviarPedidosPOST(device_ph, "ph");
+                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+                        builder.setTitle("A normalizar...");
+                        builder.setMessage("Deseja cancelar a normalização do pH?")
+                                .setCancelable(false)
+                                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        valorpHDesejado = 0;
+                                        EnviarPedidosPOST(device_ph, "ph");
+                                    }
+                                })
+                                .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
                     }
                     else {
                         if (valorpH < MAX_PH / 2) {
@@ -187,8 +211,23 @@ public class phcloroFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if(valorCloroDesejado != 0){
-                        valorCloroDesejado = 0;
-                        EnviarPedidosPOST(device_cloro, "cloro");
+                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+                        builder.setTitle("A normalizar...");
+                        builder.setMessage("Deseja cancelar a normalização do cloro?")
+                                .setCancelable(false)
+                                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        valorCloroDesejado = 0;
+                                        EnviarPedidosPOST(device_cloro, "cloro");
+                                    }
+                                })
+                                .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
                     }
                     else {
                         if (valorCloro < MAX_CLORO / 2) {
@@ -361,10 +400,16 @@ public class phcloroFragment extends Fragment {
             NormalizarCloro.setText(getResources().getString(R.string.button_normalize));
             NormalizarCloro.setBackgroundResource(R.drawable.button_round_corners_normalize);
         }
+
+        editor.putBoolean("Menu", false);
+        editor.commit();
     }
 
     public void EnviarPedidosGET(final int equipamento, final String sensor){
         /* GET */
+
+        editor.putBoolean("Menu", true);
+        editor.commit();
 
         String url_get = "http://www.myapps.shared.town/webservices/ws_get_configuracao.php";
 
@@ -388,7 +433,9 @@ public class phcloroFragment extends Fragment {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(),"Erro GET: "+String.valueOf(error), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"Erro de ligação.", Toast.LENGTH_LONG).show();
+                editor.putBoolean("Menu", false);
+                editor.commit();
             }
         });
 
@@ -396,6 +443,9 @@ public class phcloroFragment extends Fragment {
     }
 
     public void EnviarPedidosPOST(final int equipamento, final String sensor){
+
+        editor.putBoolean("Menu", true);
+        editor.commit();
 
         /* POST */
 
@@ -434,7 +484,6 @@ public class phcloroFragment extends Fragment {
                             Toast.makeText(getActivity(), "A Normalizar", Toast.LENGTH_SHORT).show();
                         }
                     }
-
                     db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
                     preencherDados();
                 }
@@ -454,7 +503,9 @@ public class phcloroFragment extends Fragment {
                     else
                         valorCloroDesejado = 0;
                 }
-                Toast.makeText(getActivity(),"Erro de ligação", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),"Erro de ligação.", Toast.LENGTH_SHORT).show();
+                editor.putBoolean("Menu", false);
+                editor.commit();
             }
         }) {
             @Override

@@ -8,9 +8,11 @@
     <string name="action_settings">Definições</string>
     <string name="settings_refresh">Sincronizar Dados</string>
     <string name="settings_notifications">Notificações</string>
+    <string name="settings_about">Sobre</string>
+    <string name="settings_exit">Sair</string>
     <string name="view_temp">Temperatura</string>
     <string name="view_engine">Motor</string>
-    <string name="view_robot">Robo</string>
+    <string name="view_robot">Robô</string>
     <string name="view_ph">pH</string>
     <string name="view_cloro">Cloro</string>
     <string name="view_cobertura">Cobertura</string>

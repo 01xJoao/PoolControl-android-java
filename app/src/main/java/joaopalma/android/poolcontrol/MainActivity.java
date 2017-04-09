@@ -1,11 +1,16 @@
 package joaopalma.android.poolcontrol;
 
+import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -36,15 +41,18 @@ import joaopalma.android.poolcontrol.db.Contrato;
 import joaopalma.android.poolcontrol.db.DB;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     ArrayList<Integer> array_equipamento;
     ArrayList<Double> array_valor;
 
     DB mDbHelper;
     SQLiteDatabase db;
-
     boolean atualizar = false;
+
+    private SensorManager sensorManager;
+    private long updateTempo;
+    MenuItem itemMenuLight;
 
     HomeFragment hf = HomeFragment.newInstance();
     TempFragment tf = TempFragment.newInstance();
@@ -57,27 +65,57 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.content_main, hf).commit();
-                    return true;
-                case R.id.navigation_temp:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.content_main, tf).commit();
-                    return true;
-                case R.id.navigation_engine:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.content_main, ef).commit();
-                    return true;
-                case R.id.navigation_lights:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.content_main, lf).commit();
-                    return true;
-                case R.id.navigation_phchlorine:
-                    getSupportFragmentManager().beginTransaction().replace(R.id.content_main, pf).commit();
-                    return true;
+            itemMenuLight = null;
+            SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+            boolean disableMenu = sharedPref.getBoolean("Menu", false);
+
+            if(!disableMenu) {
+                switch (item.getItemId()) {
+                    case R.id.navigation_home:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.content_main, hf).commit();
+                        return true;
+                    case R.id.navigation_temp:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.content_main, tf).commit();
+                        return true;
+                    case R.id.navigation_engine:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.content_main, ef).commit();
+                        return true;
+                    case R.id.navigation_lights:
+                        itemMenuLight = item;
+                        getSupportFragmentManager().beginTransaction().replace(R.id.content_main, lf).commit();
+                        return true;
+                    case R.id.navigation_phchlorine:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.content_main, pf).commit();
+                        return true;
+                }
             }
             return false;
         }
-
     };
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy){}
+
+    public void onSensorChanged(SensorEvent event){
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && itemMenuLight != null){
+            calculosAcelerometro(event);
+        }
+    }
+
+    private void calculosAcelerometro(SensorEvent event){
+        float[] values = event.values;
+        float x = values[0]; float y = values[1]; float z = values[2];
+        long tempoActual = System.currentTimeMillis();
+        float aceleracao = (x * x + y * y + z * z) / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+
+        if (aceleracao >= 4){
+            if (tempoActual - updateTempo < 200 ){ return; }
+            updateTempo = tempoActual;
+            Toast.makeText(this, ""+aceleracao, Toast.LENGTH_SHORT).show();
+            //LightsFragment  lfc = new LightsFragment();
+            //lfc.Luzes();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,14 +127,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_refresh: {
+            case R.id.action_refresh:
                 PedidoGetSensor();
                 atualizar = true;
-            }
                 return true;
             case R.id.action_notifications:
                 //notifications();
                 return true;
+            case R.id.action_about:
+                //sobre();
+                return true;
+            case R.id.action_exit:{
+                System.exit(0);
+                return true;
+            }
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -116,6 +161,12 @@ public class MainActivity extends AppCompatActivity {
 
         array_equipamento = new ArrayList<>();
         array_valor = new ArrayList<>();
+
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        updateTempo = System.currentTimeMillis();
+
 
         PedidoGetSensor();
     }
@@ -143,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this,"Erro GET: "+String.valueOf(error), Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this,"Erro de ligação.", Toast.LENGTH_LONG).show();
             }
         });
         MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsObjRequest);
@@ -167,4 +218,11 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this,"Dados dos sensores atualizados.", Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public void onBackPressed() {
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStack();
+        }
+    }
 }

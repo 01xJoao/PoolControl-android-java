@@ -9,10 +9,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -100,6 +104,8 @@ public class HomeFragment extends Fragment {
     TextView MotorHour;
     TextView RobotHour;
 
+    SharedPreferences.Editor editor;
+
     public HomeFragment() {
     }
 
@@ -123,6 +129,11 @@ public class HomeFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         getActivity().setTitle(getResources().getString(R.string.app_name));
+
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
+        editor.putBoolean("Menu", true);
+        editor.commit();
 
         array_motor_agenda = new ArrayList<>();
         array_robot_agenda = new ArrayList<>();
@@ -342,9 +353,15 @@ public class HomeFragment extends Fragment {
 
         MotorHour.setText(finaltimeMotor.substring(0, finaltimeMotor.length() - 3));
         RobotHour.setText(finaltimeRobot.substring(0, finaltimeRobot.length() - 3));
+
+        editor.putBoolean("Menu", false);
+        editor.commit();
     }
 
     public void EnviarPedido(final int equipamento, final int valor){
+
+        editor.putBoolean("Menu", true);
+        editor.commit();
 
         String url = "http://www.myapps.shared.town/webservices/ws_insert_historico.php";
 
@@ -357,12 +374,14 @@ public class HomeFragment extends Fragment {
                     ContentValues cv = new ContentValues();
                     cv.put(Contrato.Historico.COLUMN_VALOR, valor);
                     db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
+                    editor.putBoolean("Menu", false);
+                    editor.commit();
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(),"Erro de ligação", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"Erro de ligação.", Toast.LENGTH_LONG).show();
                 if(equipamento == cobertura){
                     if(valor == 0)
                         switchCobertura.setChecked(true);
@@ -375,6 +394,8 @@ public class HomeFragment extends Fragment {
                     else
                         switchLight.setChecked(false);
                 }
+                editor.putBoolean("Menu", false);
+                editor.commit();
             }
         }) {
             @Override

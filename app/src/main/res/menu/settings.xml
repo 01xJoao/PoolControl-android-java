@@ -10,4 +10,12 @@
         android:title="@string/settings_notifications"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/action_about"
+        android:title="@string/settings_about"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_exit"
+        android:title="@string/settings_exit"
+        app:showAsAction="never"/>
+
 </menu>

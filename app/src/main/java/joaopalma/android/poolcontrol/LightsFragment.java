@@ -2,8 +2,13 @@ package joaopalma.android.poolcontrol;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -28,7 +33,9 @@ import java.util.Map;
 import joaopalma.android.poolcontrol.db.Contrato;
 import joaopalma.android.poolcontrol.db.DB;
 
-public class LightsFragment extends Fragment {
+import static android.content.Context.SENSOR_SERVICE;
+
+public class LightsFragment extends Fragment {// implements SensorEventListener {
     // private OnFragmentInteractionListener mListener;
     boolean lightCentralBool = true;
     boolean lightSmall1Bool = true;
@@ -55,8 +62,9 @@ public class LightsFragment extends Fragment {
     int array_equipamento[];
     int array_valor[];
 
-    public LightsFragment() {
-    }
+    SharedPreferences.Editor editor;
+
+    public LightsFragment() {}
 
     public static LightsFragment newInstance() {
         LightsFragment fragment = new LightsFragment();
@@ -74,6 +82,9 @@ public class LightsFragment extends Fragment {
 
         mDbHelper = new DB(getActivity());
         db = mDbHelper.getReadableDatabase();
+
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
 
         if (isAdded()) {
             getActivity().setTitle(getResources().getString(R.string.title_lights));
@@ -242,8 +253,32 @@ public class LightsFragment extends Fragment {
         }
     }
 
+   /*public void Luzes(){
+
+       if (!lightCentralBool == lightSmall1Bool == lightSmall2Bool == lightSmall3Bool == lightSmall4Bool){
+
+           lightCentralBool = lightSmall1Bool = lightSmall2Bool = lightSmall3Bool = lightSmall4Bool = true;
+           EnviarPedidos(LuzCentral, true);
+           /*EnviarPedidos(LuzFrenteEsq, true);
+           EnviarPedidos(LuzFrenteDir, true);
+           EnviarPedidos(LuzTrasEsq, true);
+           EnviarPedidos(LuzTrasDir, true);
+       }
+       else {
+
+           lightCentralBool = lightSmall1Bool = lightSmall2Bool = lightSmall3Bool = lightSmall4Bool = false;
+           EnviarPedidos(LuzCentral, false);
+           EnviarPedidos(LuzFrenteEsq, false);
+           EnviarPedidos(LuzFrenteDir, false);
+           EnviarPedidos(LuzTrasEsq, false);
+           EnviarPedidos(LuzTrasDir, false);
+       }
+
+   }*/
+
     public void EnviarPedidos(final int equipamento, final boolean light){
-        //Toast.makeText(getActivity(),"Temperatura desejada " + Valor_TemperaturaDesejada + "º", Toast.LENGTH_SHORT).show();
+        editor.putBoolean("Menu", true);
+        editor.commit();
 
         final int mylight = (light) ? 1 : 0;
 
@@ -256,15 +291,21 @@ public class LightsFragment extends Fragment {
                     JSONObject jsonoutput = new JSONObject(response);
                     //Toast.makeText(getActivity(), jsonoutput.getString(Utils.param_status), Toast.LENGTH_SHORT).show();
                 } catch (JSONException ex) {
-                    ContentValues cv = new ContentValues();
-                    cv.put(Contrato.Historico.COLUMN_VALOR, mylight);
-                    db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
+                    if (isAdded()) {
+                        ContentValues cv = new ContentValues();
+                        cv.put(Contrato.Historico.COLUMN_VALOR, mylight);
+                        db.update(Contrato.Historico.TABLE_NAME, cv, Contrato.Historico.COLUMN_IDEQUIPAMENTO + " = ?", new String[]{String.valueOf(equipamento)});
+                        editor.putBoolean("Menu", false);
+                        editor.commit();
+                    }
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(),"Erro de ligação", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"Erro de ligação.", Toast.LENGTH_LONG).show();
+                editor.putBoolean("Menu", false);
+                editor.commit();
             }
         }) {
             @Override

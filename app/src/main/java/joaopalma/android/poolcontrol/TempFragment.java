@@ -2,7 +2,9 @@ package joaopalma.android.poolcontrol;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -12,6 +14,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,9 +41,6 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,6 +67,8 @@ public class TempFragment extends Fragment {
 
     TextView TempView;
 
+    SharedPreferences.Editor editor;
+
     public TempFragment() {
     }
 
@@ -85,6 +88,9 @@ public class TempFragment extends Fragment {
 
         mDbHelper = new DB(getActivity());
         db = mDbHelper.getReadableDatabase();
+
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
 
         if (isAdded()) {
 
@@ -175,14 +181,30 @@ public class TempFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if(Valor_tempDesejada != 0 && valor_barra == Valor_tempDesejada){
-                        Valor_tempDesejada = 0;
-                        Toast.makeText(getActivity(), "A cancelar...", Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+                        builder.setTitle("Temperatura em alteração...");
+                        builder.setMessage("Deseja cancelar a mudança de temperatura?")
+                                .setCancelable(false)
+                                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        Valor_tempDesejada = 0;
+                                        Toast.makeText(getActivity(), "A cancelar...", Toast.LENGTH_SHORT).show();
+                                        enviarPostHistorico();
+                                    }
+                                })
+                                .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
                     }
                     else {
                         Valor_tempDesejada = valor_barra;
                         Toast.makeText(getActivity(), "A alterar temperatura...", Toast.LENGTH_SHORT).show();
+                        enviarPostHistorico();
                     }
-                    enviarPostHistorico();
                 }
             });
 
@@ -233,10 +255,14 @@ public class TempFragment extends Fragment {
         }
 
         TempView.setText(""+temperatura+"ºc");
-
+        editor.putBoolean("Menu", false);
+        editor.commit();
     }
 
     public void enviarPostHistorico(){
+        editor.putBoolean("Menu", true);
+        editor.commit();
+
         String url = "http://www.myapps.shared.town/webservices/ws_insert_historico.php";
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
@@ -276,6 +302,8 @@ public class TempFragment extends Fragment {
                 Toast.makeText(getActivity(), "Erro de ligação.", Toast.LENGTH_LONG).show();
                 if(Valor_tempDesejada == 0)
                     Valor_tempDesejada = 1;
+                editor.putBoolean("Menu", false);
+                editor.commit();
             }
         }) {
             @Override

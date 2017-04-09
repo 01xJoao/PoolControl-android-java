@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -16,8 +18,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -100,6 +105,8 @@ public class EnginesFragment extends DialogFragment {
     static final int DIALONG_ID = 0;
     int hour_x;
     int minute_x;
+
+    SharedPreferences.Editor editor;
 
     public void showTimePickerDialog () {
         HrsTVAuto = (TextView) getActivity().findViewById(R.id.TV_Timepicker);
@@ -188,6 +195,9 @@ public class EnginesFragment extends DialogFragment {
 
         mDbHelper = new DB(getActivity());
         db = mDbHelper.getReadableDatabase();
+
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        editor = sharedPref.edit();
 
         if(isAdded()) {
 
@@ -284,8 +294,24 @@ public class EnginesFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     if(valorMotor != 0){
-                        valorMotor = 0;
-                        EnviarPedido(motor, valorMotor);
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+                        builder.setTitle("A limpar...");
+                        builder.setMessage("Deseja cancelar a limpeza do motor?")
+                                .setCancelable(false)
+                                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        valorMotor = 0;
+                                        EnviarPedido(motor, valorMotor);
+                                    }
+                                })
+                                .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
                     }
                     else {
                         Toast.makeText(getActivity(), "A iniciar motor", Toast.LENGTH_SHORT).show();
@@ -300,8 +326,23 @@ public class EnginesFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     if(valorRobo != 0){
-                        valorRobo = 0;
-                        EnviarPedido(robo, valorRobo);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+                        builder.setTitle("A limpar...");
+                        builder.setMessage("Deseja cancelar a limpeza do robô?")
+                                .setCancelable(false)
+                                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        valorRobo = 0;
+                                        EnviarPedido(robo, valorRobo);
+                                    }
+                                })
+                                .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
                     }
                     else {
                         Toast.makeText(getActivity(), "A iniciar robô", Toast.LENGTH_SHORT).show();
@@ -514,9 +555,15 @@ public class EnginesFragment extends DialogFragment {
         Adapter adapterRobot = new Adapter(getActivity(), robo_automatico,robotHrs, robotDuration);
         lvRobot.setAdapter(adapterRobot);
 
+        editor.putBoolean("Menu", false);
+        editor.commit();
+
     }
 
     public void EnviarPedido(final int equipamento, final int valor){
+
+        editor.putBoolean("Menu", true);
+        editor.commit();
 
         String url = "http://www.myapps.shared.town/webservices/ws_insert_historico.php";
 
@@ -560,6 +607,8 @@ public class EnginesFragment extends DialogFragment {
                     else
                         switchRobot.setChecked(false);
                 }
+                editor.putBoolean("Menu", false);
+                editor.commit();
             }
         }) {
             @Override
@@ -581,6 +630,8 @@ public class EnginesFragment extends DialogFragment {
     }
 
     public void EnviarAgenda(final int equipamento, final String time, final int duracao){
+        editor.putBoolean("Menu", true);
+        editor.commit();
 
         String url = "http://www.myapps.shared.town/webservices/ws_insert_agendamento.php";
 
@@ -602,7 +653,9 @@ public class EnginesFragment extends DialogFragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(),"Erro: " + String.valueOf(error), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"Erro de ligação.", Toast.LENGTH_LONG).show();
+                editor.putBoolean("Menu", false);
+                editor.commit();
             }
         }) {
             @Override
@@ -624,47 +677,6 @@ public class EnginesFragment extends DialogFragment {
         MySingleton.getInstance(getActivity()).addToRequestQueue(stringRequest);
     }
 
-    /*public void ReceberAgenda(){
-
-        String url_get = "https://poolcontrol.000webhostapp.com/webservices/ws_get_agendamento.php";
-
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url_get, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONArray array = response.getJSONArray(Utils.param_dados);
-
-                    enginesHrs.clear();
-                    enginesDuration.clear();
-                    robotHrs.clear();
-                    robotDuration.clear();
-
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject obj = array.getJSONObject(i);
-                        if(obj.getString("id_equipamento").equals("17")){
-                            enginesHrs.add(obj.getString("inicio"));
-                            enginesDuration.add(obj.getString("tempo_duracao"));
-                        }
-                        else{
-                            robotHrs.add(obj.getString("inicio"));
-                            robotDuration.add(obj.getString("tempo_duracao"));
-                        }
-                    }
-                    MostrarAgenda();
-                } catch(JSONException ex){}
-            }
-        }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(),"Erro GET: "+String.valueOf(error), Toast.LENGTH_LONG).show();
-            }
-        });
-
-        MySingleton.getInstance(getActivity()).addToRequestQueue(jsObjRequest);
-    }*/
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_engines, container, false);
@@ -679,10 +691,10 @@ public class EnginesFragment extends DialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-       /* if(!c_historico.isClosed()){
+        if(!c_historico.isClosed()){
             c_historico.close();
             c_historico = null;
-        }*/
+        }
 
         if(!c_agendamento.isClosed()){
             c_agendamento.close();
