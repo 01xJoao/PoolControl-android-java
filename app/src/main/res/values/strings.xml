@@ -62,5 +62,13 @@
 
     <string name="next_clean">Próxima\nlimpeza</string>
     <string name="btn_stop">Parar</string>
-
+    
+    <string name="sensor_title">Sensores</string>
+    <string name="sensor_subtitle">Vê e altera a temperatura, ou normaliza o pH e o Cloro da piscina.</string>
+    <string name="engine_title">Engenhos</string>
+    <string name="engine_subtitle">Faz uma limpeza manual da piscina ou cria uma agenda.</string>
+    <string name="light_title">Luzes</string>
+    <string name="light_subtitle">Movimenta o smartphone para ligar ou desligar todas as luzes.</string>
+    <string name="poolcontrol_title">PoolControl</string>
+    <string name="poolcontrol_subtitle">Aplicação criada pelo aluno João Palma do mestrado de Engenharia de Software.</string>
 </resources>

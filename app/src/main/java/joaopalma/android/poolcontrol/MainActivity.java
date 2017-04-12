@@ -3,6 +3,7 @@ package joaopalma.android.poolcontrol;
 import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -39,6 +40,8 @@ import java.util.Map;
 
 import joaopalma.android.poolcontrol.db.Contrato;
 import joaopalma.android.poolcontrol.db.DB;
+import za.co.riggaroo.materialhelptutorial.TutorialItem;
+import za.co.riggaroo.materialhelptutorial.tutorial.MaterialTutorialActivity;
 
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
@@ -59,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     EnginesFragment ef = EnginesFragment.newInstance();
     LightsFragment lf = LightsFragment.newInstance();
     phcloroFragment pf = phcloroFragment.newInstance();
+
+    private static final int REQUEST_CODE = 1234;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -131,11 +136,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 PedidoGetSensor();
                 atualizar = true;
                 return true;
-            case R.id.action_notifications:
-                //notifications();
-                return true;
             case R.id.action_about:
-                //sobre();
+                sobre();
                 return true;
             case R.id.action_exit:{
                 System.exit(0);
@@ -224,5 +226,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (fm.getBackStackEntryCount() > 0) {
             fm.popBackStack();
         }
+    }
+
+    public void sobre(){
+        Intent mainAct = new Intent(this, MaterialTutorialActivity.class);
+        mainAct.putParcelableArrayListExtra(MaterialTutorialActivity.MATERIAL_TUTORIAL_ARG_TUTORIAL_ITEMS, getTutorialItems(this));
+        startActivityForResult(mainAct, REQUEST_CODE);
+    }
+
+    private ArrayList<TutorialItem> getTutorialItems(Context context) {
+        TutorialItem tutorialItem1 = new TutorialItem(context.getString(R.string.sensor_title), context.getString(R.string.sensor_subtitle),
+                R.color.sensor, R.drawable.poolc1);
+
+        TutorialItem tutorialItem2 = new TutorialItem(context.getString(R.string.engine_title), context.getString(R.string.engine_subtitle),
+                R.color.engines, R.drawable.poolc2);
+
+        TutorialItem tutorialItem3 = new TutorialItem(context.getString(R.string.light_title), context.getString(R.string.light_subtitle),
+                R.color.light, R.drawable.poolc3);
+
+        TutorialItem tutorialItem4 = new TutorialItem(context.getString(R.string.poolcontrol_title), context.getString(R.string.poolcontrol_subtitle),
+                R.color.poolcontrol, R.drawable.poolc4);
+
+
+        ArrayList<TutorialItem> tutorialItems = new ArrayList<>();
+        tutorialItems.add(tutorialItem1);
+        tutorialItems.add(tutorialItem2);
+        tutorialItems.add(tutorialItem3);
+        tutorialItems.add(tutorialItem4);
+
+        return tutorialItems;
     }
 }

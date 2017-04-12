@@ -6,10 +6,6 @@
         android:title="@string/settings_refresh"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/action_notifications"
-        android:title="@string/settings_notifications"
-        app:showAsAction="never"/>
-
     <item android:id="@+id/action_about"
         android:title="@string/settings_about"
         app:showAsAction="never"/>

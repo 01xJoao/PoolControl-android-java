@@ -20,13 +20,14 @@
     <color name="light_on">#F7E557</color>
     <color name="timehrs">#36D59E</color>
     <color name="colorbottonnormalize">#00B1FF</color>
-
     <color name="recipiente_normal">#36D59E</color>
     <color name="recipiente_baixo">#F05C5C</color>
-
     <color name="ph">#D37645</color>
     <color name="cloro">#E6D341</color>
-
     <color name="btn_temp">#DDD364</color>
 
+    <color name="sensor">#50B5E2</color>
+    <color name="engines">#68B77E</color>
+    <color name="light">#E8BF37</color>
+    <color name="poolcontrol">#6C18DD</color>
 </resources>

@@ -348,8 +348,8 @@ public class HomeFragment extends Fragment {
         /*Temp, pH, Cloro*/
 
         ButtonTempValue.setText(""+Math.round(valorSensorTemp)+"º");
-        ButtonphValue.setText(""+valorSensorPh);
-        ButtonCloroValue.setText(""+valorSensorCloro);
+        ButtonphValue.setText("" + valorSensorPh);
+        ButtonCloroValue.setText("" + valorSensorCloro);
 
         MotorHour.setText(finaltimeMotor.substring(0, finaltimeMotor.length() - 3));
         RobotHour.setText(finaltimeRobot.substring(0, finaltimeRobot.length() - 3));

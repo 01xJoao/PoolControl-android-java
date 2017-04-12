@@ -39,5 +39,6 @@ dependencies {
     compile 'com.android.volley:volley:1.0.0'
     compile 'com.baoyz.pullrefreshlayout:library:1.2.0'
     compile 'com.makeramen:roundedimageview:2.3.0'
+    compile 'za.co.riggaroo:materialhelptutorial:1.+'
     testCompile 'junit:junit:4.12'
 }
