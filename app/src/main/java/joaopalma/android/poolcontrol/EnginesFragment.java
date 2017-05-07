@@ -203,8 +203,6 @@ public class EnginesFragment extends DialogFragment {
 
             getActivity().setTitle(getResources().getString(R.string.title_engine));
 
-            //ReceberAgenda();
-
             enginesHrs = new ArrayList<>();
             enginesDuration = new ArrayList<>();
             robotHrs = new ArrayList<>();
@@ -217,7 +215,7 @@ public class EnginesFragment extends DialogFragment {
                     layout.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            //preencherDados();
+                            preencherDados();
                             layout.setRefreshing(false);
                         }
                     }, 3000);
@@ -453,7 +451,6 @@ public class EnginesFragment extends DialogFragment {
 
 
     public void preencherDados(){
-
         /* HISTORICO*/
 
         c_historico = db.query(false, Contrato.Historico.TABLE_NAME, Contrato.Historico.PROJECTION,
@@ -475,6 +472,7 @@ public class EnginesFragment extends DialogFragment {
         }
 
         /* AGENDA*/
+
         c_agendamento = db.query(false, Contrato.Agendamento.TABLE_NAME, Contrato.Agendamento.PROJECTION,
                 "id_equipamento = ? OR id_equipamento = ?",new String[]{String.valueOf(motor_automatico),String.valueOf(robo_automatico)},
                     null, null, Contrato.Agendamento.COLUMN_INICIO + " ASC", null );
@@ -518,7 +516,6 @@ public class EnginesFragment extends DialogFragment {
     }
 
     public void mostrarDados(){
-
         if(valorMotorAutomatico == 1)
             switchEngine.setChecked(true);
         else
@@ -533,7 +530,7 @@ public class EnginesFragment extends DialogFragment {
             btnMotorManual.setText(getResources().getString(R.string.btn_stop));
             btnMotorManual.setBackgroundResource(R.drawable.button_round_corners_parar);
         }else{
-            btnMotorManual.setText(getResources().getString(R.string.button_normalize));
+            btnMotorManual.setText(getResources().getString(R.string.button_start_engine));
             btnMotorManual.setBackgroundResource(R.drawable.button_round_corners_engine);
         }
 
@@ -541,7 +538,7 @@ public class EnginesFragment extends DialogFragment {
             btnRoboManual.setText(getResources().getString(R.string.btn_stop));
             btnRoboManual.setBackgroundResource(R.drawable.button_round_corners_parar);
         }else{
-            btnRoboManual.setText(getResources().getString(R.string.button_normalize));
+            btnRoboManual.setText(getResources().getString(R.string.button_start_engine));
             btnRoboManual.setBackgroundResource(R.drawable.button_round_corners_robot);
         }
 
@@ -557,7 +554,6 @@ public class EnginesFragment extends DialogFragment {
 
         editor.putBoolean("Menu", false);
         editor.commit();
-
     }
 
     public void EnviarPedido(final int equipamento, final int valor){
@@ -641,7 +637,6 @@ public class EnginesFragment extends DialogFragment {
                 try {
                     JSONObject jsonoutput = new JSONObject(response);
                 } catch (JSONException ex) {
-                    //ReceberAgenda();
                     ContentValues cv = new ContentValues();
                     cv.put(Contrato.Agendamento.COLUMN_IDEQUIPAMENTO, equipamento);
                     cv.put(Contrato.Agendamento.COLUMN_INICIO, time);

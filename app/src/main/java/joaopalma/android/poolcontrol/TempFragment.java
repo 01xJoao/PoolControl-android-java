@@ -41,6 +41,7 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,9 +51,14 @@ import joaopalma.android.poolcontrol.db.DB;
 public class TempFragment extends Fragment {
     // private OnFragmentInteractionListener mListener;
     int temperatura;
+    String temperaturaHrs;
     int Valor_tempDesejada;
     int valor_barra;
     int equipamento = 7;
+    int maximaTemp = 40;
+
+    ArrayList<Integer> temperaturas;
+    ArrayList<String> temperaturasHrs;
 
     PullRefreshLayout layout;
 
@@ -66,6 +72,10 @@ public class TempFragment extends Fragment {
     Button buttonAlterarTemp;
 
     TextView TempView;
+
+    TextView primeiro, segundo, terceiro, quarto, quinto, sexto, setimo, oitavo;
+    TextView primeiros, segundos, terceiros, quartos, quintos, sextos, setimos, oitavos;
+
 
     SharedPreferences.Editor editor;
 
@@ -93,6 +103,9 @@ public class TempFragment extends Fragment {
         editor = sharedPref.edit();
 
         if (isAdded()) {
+
+            temperaturas = new ArrayList<>();
+            temperaturasHrs = new ArrayList<>();
 
             getActivity().setTitle(getResources().getString(R.string.title_temp));
 
@@ -124,6 +137,24 @@ public class TempFragment extends Fragment {
             controlView.setPaintFlags(controlView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             historyView.setPaintFlags(controlView.getPaintFlags() & (~Paint.UNDERLINE_TEXT_FLAG));
 
+            primeiro = (TextView) getActivity().findViewById(R.id.primeiro);
+            segundo = (TextView) getActivity().findViewById(R.id.segundo);
+            terceiro = (TextView) getActivity().findViewById(R.id.terceiro);
+            quarto = (TextView) getActivity().findViewById(R.id.quarto);
+            quinto = (TextView) getActivity().findViewById(R.id.quinto);
+            sexto = (TextView) getActivity().findViewById(R.id.sexto);
+            setimo = (TextView) getActivity().findViewById(R.id.setimo);
+            oitavo = (TextView) getActivity().findViewById(R.id.oitavo);
+
+            primeiros = (TextView) getActivity().findViewById(R.id._primeiro);
+            segundos = (TextView) getActivity().findViewById(R.id._segundo);
+            terceiros = (TextView) getActivity().findViewById(R.id._terceiro);
+            quartos = (TextView) getActivity().findViewById(R.id._quarto);
+            quintos = (TextView) getActivity().findViewById(R.id._quinto);
+            sextos = (TextView) getActivity().findViewById(R.id._sexto);
+            setimos = (TextView) getActivity().findViewById(R.id._setimo);
+            oitavos = (TextView) getActivity().findViewById(R.id._oitavo);
+
             controlView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -144,16 +175,6 @@ public class TempFragment extends Fragment {
                 }
             });
 
-            GraphView graph = (GraphView) getActivity().findViewById(R.id.graph);
-            LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[]{
-                    new DataPoint(0, 1),
-                    new DataPoint(1, 5),
-                    new DataPoint(2, 3),
-                    new DataPoint(3, 2),
-                    new DataPoint(4, 6)
-            });
-            graph.addSeries(series);
-
             /* ALTERAR TEMPERATURA */
 
             buttonAlterarTemp = (Button) getActivity().findViewById(R.id.alterarTemperatura);
@@ -164,6 +185,7 @@ public class TempFragment extends Fragment {
             BarChangeTemp.setNumericTransformer(new DiscreteSeekBar.NumericTransformer() {
                 @Override
                 public int transform(int value) {
+
                     buttonAlterarTemp.setText(getResources().getString(R.string.button_change));
                     buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
                     valor_barra = value;
@@ -173,6 +195,10 @@ public class TempFragment extends Fragment {
                         buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners_parar);
                     }
 
+                    if (temperatura == maximaTemp) {
+                        BarChangeTemp.setProgress(temperatura);
+                        valor_barra = value = temperatura;
+                    }
                     return value;
                 }
             });
@@ -180,30 +206,34 @@ public class TempFragment extends Fragment {
             buttonAlterarTemp.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(Valor_tempDesejada != 0 && valor_barra == Valor_tempDesejada){
-                        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
-                        builder.setTitle("Temperatura em alteração...");
-                        builder.setMessage("Deseja cancelar a mudança de temperatura?")
-                                .setCancelable(false)
-                                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        Valor_tempDesejada = 0;
-                                        Toast.makeText(getActivity(), "A cancelar...", Toast.LENGTH_SHORT).show();
-                                        enviarPostHistorico();
-                                    }
-                                })
-                                .setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-                        AlertDialog alert = builder.create();
-                        alert.show();
-                    }
+
+                    if(temperatura > valor_barra)
+                        Toast.makeText(getActivity(), "Não é possivel baixar temperatura.", Toast.LENGTH_SHORT).show();
                     else {
-                        Valor_tempDesejada = valor_barra;
-                        Toast.makeText(getActivity(), "A alterar temperatura...", Toast.LENGTH_SHORT).show();
-                        enviarPostHistorico();
+                        if (Valor_tempDesejada != 0 && valor_barra == Valor_tempDesejada) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
+                            builder.setTitle("Temperatura em alteração...");
+                            builder.setMessage("Deseja cancelar a mudança de temperatura?")
+                                    .setCancelable(false)
+                                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            Valor_tempDesejada = 0;
+                                            Toast.makeText(getActivity(), "A cancelar...", Toast.LENGTH_SHORT).show();
+                                            enviarPostHistorico();
+                                        }
+                                    })
+                                    .setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                        } else {
+                            Valor_tempDesejada = valor_barra;
+                            Toast.makeText(getActivity(), "A alterar temperatura...", Toast.LENGTH_SHORT).show();
+                            enviarPostHistorico();
+                        }
                     }
                 }
             });
@@ -219,14 +249,21 @@ public class TempFragment extends Fragment {
         c_historico.moveToFirst();
         Valor_tempDesejada = c_historico.getInt(2);
 
-        /*c_sensor = db.query(false, Contrato.Sensor.TABLE_NAME, Contrato.Sensor.PROJECTION,
-                "id_equipamento = ?", new String[]{String.valueOf(equipamento)}, null, null, Contrato.Sensor._ID + " DESC", "1");*/
-
         c_sensor = db.query(false, Contrato.Sensor.TABLE_NAME, Contrato.Sensor.PROJECTION,
                 "id_equipamento = ?", new String[]{String.valueOf(equipamento)}, null, null, null, null);
 
         c_sensor.moveToLast();
         temperatura = c_sensor.getInt(2);
+        temperaturaHrs = c_sensor.getString(3);
+
+        temperaturas.clear();
+        temperaturasHrs.clear();
+
+        for(int i = 0; i<= 6; i++){
+            c_sensor.moveToPrevious();
+            temperaturas.add(c_sensor.getInt(2));
+            temperaturasHrs.add(c_sensor.getString(3));
+        }
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -234,29 +271,68 @@ public class TempFragment extends Fragment {
             public void run() {
                 mostrarDados();
             }
-        }, 100);
+        }, 10);
     }
 
     public void mostrarDados(){
-        BarChangeTemp.setMin(temperatura);
 
-        if(Valor_tempDesejada != 0)
-            BarChangeTemp.setProgress(Valor_tempDesejada);
-        else
+        if (temperatura == maximaTemp) {
+            BarChangeTemp.setMax(temperatura);
             BarChangeTemp.setProgress(temperatura);
-
-        if(Valor_tempDesejada > temperatura) {
-            buttonAlterarTemp.setText(getResources().getString(R.string.button_changed));
-            buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners_parar);
         }
         else {
-            buttonAlterarTemp.setText(getResources().getString(R.string.button_change));
-            buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
-        }
+            BarChangeTemp.setMin(temperatura);
 
-        TempView.setText(""+temperatura+"ºc");
+            if (Valor_tempDesejada != 0)
+                BarChangeTemp.setProgress(Valor_tempDesejada);
+            else {
+                BarChangeTemp.setProgress(temperatura);
+            }
+
+            if (Valor_tempDesejada > temperatura) {
+                buttonAlterarTemp.setText(getResources().getString(R.string.button_changed));
+                buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners_parar);
+            } else {
+                buttonAlterarTemp.setText(getResources().getString(R.string.button_change));
+                buttonAlterarTemp.setBackgroundResource(R.drawable.button_round_corners);
+            }
+        }
+        if (temperatura < 10)
+            TempView.setText(" "+temperatura+"ºc ");
+        else
+            TempView.setText(""+temperatura+"ºc");
+
         editor.putBoolean("Menu", false);
         editor.commit();
+
+        GraphView graph = (GraphView) getActivity().findViewById(R.id.graph);
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(new DataPoint[]{
+                new DataPoint(1, temperaturas.get(3)),
+                new DataPoint(2, temperaturas.get(2)),
+                new DataPoint(3, temperaturas.get(1)),
+                new DataPoint(4, temperaturas.get(0)),
+                new DataPoint(5, temperatura)
+        });
+        graph.addSeries(series);
+
+        primeiro.setText(temperaturasHrs.get(6));
+        segundo.setText(temperaturasHrs.get(5));
+        terceiro.setText(temperaturasHrs.get(4));
+        quarto.setText(temperaturasHrs.get(3));
+        quinto.setText(temperaturasHrs.get(2));
+        sexto.setText(temperaturasHrs.get(1));
+        setimo.setText(temperaturasHrs.get(0));
+        oitavo.setText(temperaturaHrs);
+
+        primeiros.setText(""+temperaturas.get(6));
+        segundos.setText(""+temperaturas.get(5));
+        terceiros.setText(""+temperaturas.get(4));
+        quartos.setText(""+temperaturas.get(3));
+        quintos.setText(""+temperaturas.get(2));
+        sextos.setText(""+temperaturas.get(1));
+        setimos.setText(""+temperaturas.get(0));
+        oitavos.setText(""+temperatura);
+
     }
 
     public void enviarPostHistorico(){
@@ -270,7 +346,6 @@ public class TempFragment extends Fragment {
             public void onResponse(String response) {
                 try {
                     JSONObject jsonoutput = new JSONObject(response);
-                    //Toast.makeText(getActivity(), jsonoutput.getString(Utils.param_status), Toast.LENGTH_SHORT).show();
                 } catch (JSONException ex) {
                     ContentValues cv = new ContentValues();
 

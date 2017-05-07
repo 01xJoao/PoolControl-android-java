@@ -270,51 +270,40 @@ public class phcloroFragment extends Fragment {
 
             /* Gráfico nos Controlos*/
 
-            // Find the components
             final ScArcGauge gauge = (ScArcGauge) getActivity().findViewById(R.id.gauge);
             assert gauge != null;
 
             indicator = (ImageView) getActivity().findViewById(R.id.indicator);
             assert indicator != null;
 
-            // Set the center pivot for a right rotation
             indicator.setPivotX(30f);
             indicator.setPivotY(30f);
 
-            // If you set the value from the xml that not produce an event so I will change the
-            // value from code.
             gauge.setHighValue(Math.round((100*valorpH)/MAX_PH));
 
-            // Each time I will change the value I must write it inside the counter text.
             gauge.setOnEventListener(new ScGauge.OnEventListener() {
                 @Override
                 public void onValueChange(float lowValue, float highValue) {
-                    // Convert the percentage value in an angle
+                    // Converter percentagem em angulo
                     float angle = gauge.percentageToAngle(highValue);
                     indicator.setRotation(angle);
                 }
             });
 
-            // Find the components
             final ScArcGauge gauge_cloro = (ScArcGauge) getActivity().findViewById(R.id.gauge_cloro);
             assert gauge_cloro != null;
 
             indicator_cloro = (ImageView) getActivity().findViewById(R.id.indicator_cloro);
             assert indicator != null;
 
-            // Set the center pivot for a right rotation
             indicator_cloro.setPivotX(30f);
             indicator_cloro.setPivotY(30f);
 
-            // If you set the value from the xml that not produce an event so I will change the
-            // value from code.
             gauge_cloro.setHighValue(Math.round((100*valorCloro)/MAX_CLORO));
 
-            // Each time I will change the value I must write it inside the counter text.
             gauge_cloro.setOnEventListener(new ScGauge.OnEventListener() {
                 @Override
                 public void onValueChange(float lowValue, float highValue) {
-                    // Convert the percentage value in an angle
                     float angle = gauge_cloro.percentageToAngle(highValue);
                     indicator_cloro.setRotation(angle);
                 }

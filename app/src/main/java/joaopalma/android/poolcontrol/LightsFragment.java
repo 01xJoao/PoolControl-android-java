@@ -34,9 +34,12 @@ import joaopalma.android.poolcontrol.db.Contrato;
 import joaopalma.android.poolcontrol.db.DB;
 
 import static android.content.Context.SENSOR_SERVICE;
+import static android.hardware.Sensor.TYPE_ACCELEROMETER;
 
-public class LightsFragment extends Fragment {// implements SensorEventListener {
-    // private OnFragmentInteractionListener mListener;
+public class LightsFragment extends Fragment {
+    private SensorManager sensorManager;
+    private Sensor mAccelerometerSensor;
+    private long updateTempo;
     boolean lightCentralBool = true;
     boolean lightSmall1Bool = true;
     boolean lightSmall2Bool = true;
@@ -62,6 +65,8 @@ public class LightsFragment extends Fragment {// implements SensorEventListener 
     int array_equipamento[];
     int array_valor[];
 
+    boolean Sensor = false;
+
     SharedPreferences.Editor editor;
 
     public LightsFragment() {}
@@ -86,6 +91,11 @@ public class LightsFragment extends Fragment {// implements SensorEventListener 
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         editor = sharedPref.edit();
 
+        sensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
+        mAccelerometerSensor = sensorManager.getDefaultSensor(TYPE_ACCELEROMETER);
+        sensorManager.registerListener(sensorEventListener, mAccelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        updateTempo = System.currentTimeMillis();
+
         if (isAdded()) {
             getActivity().setTitle(getResources().getString(R.string.title_lights));
 
@@ -98,11 +108,18 @@ public class LightsFragment extends Fragment {// implements SensorEventListener 
             btCentral.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    EnviarPedidos(LuzCentral, lightCentralBool);
-                    if (lightCentralBool) {
-                        btCentral.setBackgroundResource(R.drawable.button_round_corners_light_on);
-                    } else {
-                        btCentral.setBackgroundResource(R.drawable.button_round_corners_light_off);
+                    if(Sensor){
+                        Toast.makeText(getActivity(), ""+Sensor, Toast.LENGTH_SHORT).show();
+                        Luzes();
+                        Sensor = false;
+                    }
+                    else {
+                        EnviarPedidos(LuzCentral, lightCentralBool);
+                        if (lightCentralBool) {
+                            btCentral.setBackgroundResource(R.drawable.button_round_corners_light_on);
+                        } else {
+                            btCentral.setBackgroundResource(R.drawable.button_round_corners_light_off);
+                        }
                     }
                     lightCentralBool = !lightCentralBool;
                 }
@@ -253,19 +270,47 @@ public class LightsFragment extends Fragment {// implements SensorEventListener 
         }
     }
 
-   /*public void Luzes(){
+    final SensorEventListener sensorEventListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent sensorEvent) {
+            switch (sensorEvent.sensor.getType()) {
+                case TYPE_ACCELEROMETER:
+                    calculosAcelerometro(sensorEvent);
+                    break;
+            }
+        }
 
-       if (!lightCentralBool == lightSmall1Bool == lightSmall2Bool == lightSmall3Bool == lightSmall4Bool){
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
 
+    };
+
+    private void calculosAcelerometro(SensorEvent event){
+        float[] values = event.values;
+        float x = values[0]; float y = values[1]; float z = values[2];
+        long tempoActual = System.currentTimeMillis();
+        float aceleracao = (x * x + y * y + z * z) / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+
+        if (aceleracao >= 5){
+            if (tempoActual - updateTempo < 200 ){ return; }
+            updateTempo = tempoActual;
+            Luzes();
+
+        }
+    }
+
+   public void Luzes(){
+       if (lightCentralBool == true)
+       {
            lightCentralBool = lightSmall1Bool = lightSmall2Bool = lightSmall3Bool = lightSmall4Bool = true;
            EnviarPedidos(LuzCentral, true);
-           /*EnviarPedidos(LuzFrenteEsq, true);
+           EnviarPedidos(LuzFrenteEsq, true);
            EnviarPedidos(LuzFrenteDir, true);
            EnviarPedidos(LuzTrasEsq, true);
            EnviarPedidos(LuzTrasDir, true);
        }
        else {
-
            lightCentralBool = lightSmall1Bool = lightSmall2Bool = lightSmall3Bool = lightSmall4Bool = false;
            EnviarPedidos(LuzCentral, false);
            EnviarPedidos(LuzFrenteEsq, false);
@@ -273,8 +318,8 @@ public class LightsFragment extends Fragment {// implements SensorEventListener 
            EnviarPedidos(LuzTrasEsq, false);
            EnviarPedidos(LuzTrasDir, false);
        }
-
-   }*/
+       mostrarDados();
+   }
 
     public void EnviarPedidos(final int equipamento, final boolean light){
         editor.putBoolean("Menu", true);

@@ -148,8 +148,8 @@ public class HomeFragment extends Fragment {
 
         switchCobertura = (SwitchCompat) getActivity().findViewById(R.id.switch_cobertura);
         switchLight = (SwitchCompat) getActivity().findViewById(R.id.switch_light);
-        layout = (PullRefreshLayout) getActivity().findViewById(R.id.swipeRefreshLayout);
 
+        layout = (PullRefreshLayout) getActivity().findViewById(R.id.swipeRefreshLayout);
         layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -206,13 +206,7 @@ public class HomeFragment extends Fragment {
         mDbHelper = new DB(getActivity());
         db = mDbHelper.getReadableDatabase();
 
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                preencherDados();
-            }
-        }, 500);
+        preencherDados();
     }
 
     public void preencherDados(){
@@ -332,20 +326,17 @@ public class HomeFragment extends Fragment {
             finaltimeRobot = array_robot_agenda_time.get(0);
 
         MostrarDados();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mostrarSwitch();
+            }
+        }, 500);
     }
 
     public void MostrarDados(){
-        if(valorLuzCentral == 1)
-            switchLight.setChecked(true);
-        else
-            switchLight.setChecked(false);
-
-        if(valorCobertura == 1)
-            switchCobertura.setChecked(true);
-        else
-            switchCobertura.setChecked(false);
-
-        /*Temp, pH, Cloro*/
 
         ButtonTempValue.setText(""+Math.round(valorSensorTemp)+"º");
         ButtonphValue.setText("" + valorSensorPh);
@@ -356,6 +347,18 @@ public class HomeFragment extends Fragment {
 
         editor.putBoolean("Menu", false);
         editor.commit();
+    }
+
+    public void mostrarSwitch(){
+        if(valorLuzCentral == 1)
+            switchLight.setChecked(true);
+        else
+            switchLight.setChecked(false);
+
+        if(valorCobertura == 1)
+            switchCobertura.setChecked(true);
+        else
+            switchCobertura.setChecked(false);
     }
 
     public void EnviarPedido(final int equipamento, final int valor){

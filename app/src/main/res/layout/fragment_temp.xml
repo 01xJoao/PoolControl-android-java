@@ -144,6 +144,7 @@
                                     android:layout_width="wrap_content">
 
                                     <TextView
+                                        android:id="@+id/primeiro"
                                         android:layout_marginLeft="1dp"
                                         android:layout_width="wrap_content"
                                         android:padding="5dp"
@@ -153,6 +154,7 @@
                                         android:textColor="@color/eight_hrs_time_text"/>
 
                                     <TextView
+                                        android:id="@+id/segundo"
                                         android:layout_marginLeft="1dp"
                                         android:layout_width="wrap_content"
                                         android:padding="5dp"
@@ -161,6 +163,7 @@
                                         android:textColor="@color/eight_hrs_time_text"/>
 
                                     <TextView
+                                        android:id="@+id/terceiro"
                                         android:layout_marginLeft="1dp"
                                         android:layout_width="wrap_content"
                                         android:padding="5dp"
@@ -169,6 +172,7 @@
                                         android:textColor="@color/eight_hrs_time_text"/>
 
                                     <TextView
+                                        android:id="@+id/quarto"
                                         android:layout_marginLeft="1dp"
                                         android:layout_width="wrap_content"
                                         android:padding="5dp"
@@ -176,6 +180,7 @@
                                         android:text="08:00"
                                         android:textColor="@color/eight_hrs_time_text"/>
                                     <TextView
+                                        android:id="@+id/quinto"
                                         android:layout_marginLeft="1dp"
                                         android:layout_width="wrap_content"
                                         android:padding="5dp"
@@ -184,6 +189,7 @@
                                         android:textColor="@color/eight_hrs_time_text"/>
 
                                     <TextView
+                                        android:id="@+id/sexto"
                                         android:layout_marginLeft="1dp"
                                         android:layout_width="wrap_content"
                                         android:padding="5dp"
@@ -192,6 +198,7 @@
                                         android:textColor="@color/eight_hrs_time_text"/>
 
                                     <TextView
+                                        android:id="@+id/setimo"
                                         android:layout_marginLeft="1dp"
                                         android:layout_width="wrap_content"
                                         android:padding="5dp"
@@ -200,6 +207,7 @@
                                         android:textColor="@color/eight_hrs_time_text"/>
 
                                     <TextView
+                                        android:id="@+id/oitavo"
                                         android:layout_marginLeft="1dp"
                                         android:layout_width="wrap_content"
                                         android:padding="5dp"
@@ -217,6 +225,7 @@
                                     android:layout_width="wrap_content">
 
                                     <TextView
+                                        android:id="@+id/_primeiro"
                                         android:layout_marginLeft="1dp"
                                         android:layout_height="match_parent"
                                         android:layout_width="wrap_content"
@@ -231,6 +240,7 @@
                                         android:fontFamily="sans-serif-light"/>
 
                                     <TextView
+                                        android:id="@+id/_segundo"
                                         android:layout_marginLeft="1dp"
                                         android:layout_height="match_parent"
                                         android:layout_width="wrap_content"
@@ -246,6 +256,7 @@
                                         android:fontFamily="sans-serif-light"/>
 
                                     <TextView
+                                        android:id="@+id/_terceiro"
                                         android:layout_marginLeft="1dp"
                                         android:layout_height="match_parent"
                                         android:layout_width="wrap_content"
@@ -261,6 +272,7 @@
                                         android:fontFamily="sans-serif-light"/>
 
                                     <TextView
+                                        android:id="@+id/_quarto"
                                         android:layout_marginLeft="1dp"
                                         android:layout_height="match_parent"
                                         android:layout_width="wrap_content"
@@ -276,6 +288,7 @@
                                         android:fontFamily="sans-serif-light"/>
 
                                     <TextView
+                                        android:id="@+id/_quinto"
                                         android:layout_marginLeft="1dp"
                                         android:layout_height="match_parent"
                                         android:layout_width="wrap_content"
@@ -291,6 +304,7 @@
                                         android:fontFamily="sans-serif-light"/>
 
                                     <TextView
+                                        android:id="@+id/_sexto"
                                         android:layout_marginLeft="1dp"
                                         android:layout_height="match_parent"
                                         android:layout_width="wrap_content"
@@ -306,6 +320,7 @@
                                         android:fontFamily="sans-serif-light"/>
 
                                     <TextView
+                                        android:id="@+id/_setimo"
                                         android:layout_marginLeft="1dp"
                                         android:layout_height="match_parent"
                                         android:layout_width="wrap_content"
@@ -321,6 +336,7 @@
                                         android:fontFamily="sans-serif-light"/>
 
                                     <TextView
+                                        android:id="@+id/_oitavo"
                                         android:layout_marginLeft="1dp"
                                         android:layout_height="match_parent"
                                         android:layout_width="wrap_content"

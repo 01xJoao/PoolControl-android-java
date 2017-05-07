@@ -13,12 +13,17 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
@@ -44,10 +49,13 @@ import za.co.riggaroo.materialhelptutorial.TutorialItem;
 import za.co.riggaroo.materialhelptutorial.tutorial.MaterialTutorialActivity;
 
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity {//implements SensorEventListener {
 
     ArrayList<Integer> array_equipamento;
     ArrayList<Double> array_valor;
+
+    ArrayList<Integer> h_array_equipamento;
+    ArrayList<Double> h_array_valor;
 
     DB mDbHelper;
     SQLiteDatabase db;
@@ -98,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     };
 
-    @Override
+  /*  @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy){}
 
     public void onSensorChanged(SensorEvent event){
@@ -116,12 +124,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (aceleracao >= 4){
             if (tempoActual - updateTempo < 200 ){ return; }
             updateTempo = tempoActual;
-            Toast.makeText(this, ""+aceleracao, Toast.LENGTH_SHORT).show();
-            //LightsFragment  lfc = new LightsFragment();
-            //lfc.Luzes();
+            LightsFragment  lfc = new LightsFragment();
+            lfc.sensor_luz(true);
+             //lfc.btCentral = (Button) findViewById(R.id.LightCentral);
+             //lfc.btCentral.performClick();
         }
     }
-
+*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -134,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 PedidoGetSensor();
+                PedidoGetHistorico();
                 atualizar = true;
                 return true;
             case R.id.action_about:
@@ -152,11 +162,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_main, hf).commit();
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        getSupportActionBar().setElevation(0);
+        setContentView(R.layout.intro_logo);
+        new CountDownTimer(5000,1000){
+            @Override
+            public void onTick(long millisUntilFinished){}
+
+            @Override
+            public void onFinish(){
+                setContentView(R.layout.activity_main);
+                getSupportFragmentManager().beginTransaction().replace(R.id.content_main, hf).commit();
+                BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+                navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+                getSupportActionBar().setElevation(0);
+            }
+        }.start();
 
         mDbHelper = new DB(MainActivity.this);
         db = mDbHelper.getReadableDatabase();
@@ -164,19 +183,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         array_equipamento = new ArrayList<>();
         array_valor = new ArrayList<>();
 
+        h_array_equipamento = new ArrayList<>();
+        h_array_valor = new ArrayList<>();
 
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-        updateTempo = System.currentTimeMillis();
+        //sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        //sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        //updateTempo = System.currentTimeMillis();
 
-
+        PedidoGetHistorico();
         PedidoGetSensor();
     }
 
     public void PedidoGetSensor(){
 
         String url = "http://www.myapps.shared.town/webservices/ws_get_sensores.php";
-
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -190,6 +210,35 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         array_valor.add(obj.getDouble("valor"));
                     }
                     carregarSensorBD();
+                } catch(JSONException ex){}
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this,"Erro de ligação.", Toast.LENGTH_LONG).show();
+            }
+        });
+        MySingleton.getInstance(MainActivity.this).addToRequestQueue(jsObjRequest);
+
+    }
+
+    public void PedidoGetHistorico(){
+
+        String url = "http://www.myapps.shared.town/webservices/ws_get_historico.php";
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray array = response.getJSONArray(Utils.param_dados);
+
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject obj = array.getJSONObject(i);
+                        h_array_equipamento.add(obj.getInt("id_equipamento"));
+                        h_array_valor.add(obj.getDouble("valor"));
+                    }
+                    carregarHistoricoBD();
                 } catch(JSONException ex){}
             }
         }, new Response.ErrorListener() {
@@ -217,7 +266,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             db.insert(Contrato.Sensor.TABLE_NAME, null, cv);
         }
         if(atualizar)
-            Toast.makeText(MainActivity.this,"Dados dos sensores atualizados.", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this,"Dados atualizados.", Toast.LENGTH_SHORT).show();
+    }
+
+    public void carregarHistoricoBD(){
+
+        for(int i = 0; i <= h_array_equipamento.size()-1; i++) {
+            ContentValues cv = new ContentValues();
+            cv.put(Contrato.Historico.COLUMN_IDEQUIPAMENTO, h_array_equipamento.get(i));
+            cv.put(Contrato.Historico.COLUMN_VALOR, h_array_valor.get(i));
+            db.insert(Contrato.Historico.TABLE_NAME, null, cv);
+        }
     }
 
     @Override
